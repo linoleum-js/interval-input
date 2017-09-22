@@ -1,0 +1,16 @@
+
+.intervalInputResizer {
+  position: absolute;
+  width: 10px;
+  height: 100%;
+  background-color: #000;
+  top: 0;
+}
+
+.intervalInputResizerLeft {
+  left: 0;
+}
+
+.intervalInputResizerRight {
+  right: 0;
+}

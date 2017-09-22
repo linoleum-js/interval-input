@@ -19,11 +19,12 @@ export function itemToPixels(
   };
 }
 
-export function itemsToPixels(
-  items: Array<IntervalInputDataItem>,
-  unitSize: number): Array<IntervalInputDataItem> {
-
-  return items.map((item: IntervalInputDataItem): IntervalInputDataItem => {
-    return itemToPixels(item, unitSize);
-  });
+export function hasParent(node: any, parent: any) {
+  while(node) {
+    if (node === parent) {
+      return true;
+    }
+    node = node.parentNode;
+  }
+  return false;
 }
