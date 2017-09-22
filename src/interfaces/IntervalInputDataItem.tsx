@@ -1,7 +1,8 @@
 interface IntervalInputDataItem {
   start: number,
   end: number,
-  type: string
+  type: string,
+  id: string
 }
 
 export default IntervalInputDataItem;

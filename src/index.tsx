@@ -7,8 +7,14 @@ import IntervalInputData from './interfaces/IntervalInputData';
 const data: IntervalInputData = {
   intervals: [{
     start: 0,
-    end: 10,
-    type: 'type-1'
+    end: 60 * 5 * 10,
+    type: 'type-1',
+    id: '1'
+  }, {
+    start: 60 * 5 * 15,
+    end: 60 * 5 * 35,
+    type: 'type-2',
+    id: '2'
   }]
 };
 
