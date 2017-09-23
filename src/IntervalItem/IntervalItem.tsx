@@ -6,17 +6,20 @@ const styles = require('./IntervalItem.css');
 import * as util from '../util/util';
 import types from '../util/types';
 import IntervalItemResizer from '../IntervalItemResizer/IntervalItemResizer';
+import IntervalInputDataItem from '../interfaces/IntervalInputDataItem';
 
 interface Props {
   start: number;
   end: number;
   type: string;
   step?: number;
+  stepInPixels: number;
   isActive?: boolean;
   onActive: Function;
   id: string;
   unitSize: number;
-  onChange: Function;
+  onItemChanging: Function;
+  onItemChangingFinish: Function;
 }
 
 interface State {
@@ -37,6 +40,7 @@ export default class IntervalItem extends React.Component<Props, State> {
 
   private onClick = () => {
     const { isActive, onActive, id } = this.props;
+    console.log('click');
     if (!isActive) {
       onActive(id);
     }
@@ -51,16 +55,27 @@ export default class IntervalItem extends React.Component<Props, State> {
     this.isInFocus = false;
   }
 
+  private onItemChangingFinish = () => {
+
+  }
+
   private onLeftMove = (diff: number) => {
-    const { onChange, start, end, type, id, unitSize } = this.props;
+    const { onItemChanging, start, end, type, id, unitSize } = this.props;
     const diffInUnits = util.pixelsToUnits(diff, unitSize);
-    onChange({ start: start + diffInUnits, end, type, id });
+    const newItem = { start: start + diffInUnits, end, type, id };
+    onItemChanging(newItem);
   }
 
   private onRightMove = (diff: number) => {
-    const { onChange, start, end, type, id, unitSize } = this.props;
+    const { onItemChanging, start, end, type, id, unitSize } = this.props;
     const diffInUnits = util.pixelsToUnits(diff, unitSize);
-    onChange({ start, end: end + diffInUnits, type, id });
+    const newItem = { start, end: end + diffInUnits, type, id };
+    onItemChanging(newItem);
+  }
+
+  private onMoveFinish = () => {
+    const { onItemChangingFinish, start, end, type, id } = this.props;
+    onItemChangingFinish({ start, end, type, id });
   }
 
   componentDidMount() {
@@ -91,7 +106,7 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   render() {
-    const { start, end, type, isActive } = this.props;
+    const { start, end, type, isActive, stepInPixels } = this.props;
 
     return (
       <div
@@ -104,12 +119,16 @@ export default class IntervalItem extends React.Component<Props, State> {
       >
         <IntervalItemResizer
           direction="left"
+          stepInPixels={ stepInPixels }
           onMove={ this.onLeftMove }
+          onMoveFinish={ this.onMoveFinish }
         />
-
+        { this.props.start + ' ' + this.props.end }
         <IntervalItemResizer
           direction="right"
+          stepInPixels={ stepInPixels }
           onMove={ this.onRightMove }
+          onMoveFinish={ this.onMoveFinish }
         />
       </div>
     );

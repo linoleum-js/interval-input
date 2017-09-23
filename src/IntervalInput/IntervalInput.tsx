@@ -19,6 +19,7 @@ interface Props {
 interface State {
   unitSize: number;
   currentActiveId?: string;
+  stepInPixels: number;
 }
 
 /**
@@ -27,12 +28,11 @@ interface State {
 export default class IntervalInput extends React.Component<Props, State> {
   private root: HTMLElement;
   private numberOfSteps: number;
-  private stepSizeInPixels: number;
 
   constructor(props: Props) {
     super(props);
     const { min, max, step } = props;
-    this.state = { unitSize: 1 };
+    this.state = { unitSize: 1, stepInPixels: 1 };
   }
 
   componentDidMount() {
@@ -41,10 +41,10 @@ export default class IntervalInput extends React.Component<Props, State> {
 
   private initialize = () => {
     const width = this.root.offsetWidth;
-    const { min, max } = this.props;
-    this.setState({
-      unitSize: width / (max - min)
-    });
+    const { min, max, step } = this.props;
+    const unitSize = width / (max - min);
+    const stepInPixels = util.unitsToPixels(step, unitSize);
+    this.setState({ unitSize, stepInPixels });
   }
 
   private onItemActive = (itemId: string) => {
@@ -55,13 +55,11 @@ export default class IntervalInput extends React.Component<Props, State> {
     return this.state.currentActiveId === item.id;
   }
 
-  private onItemChange = (item: IntervalInputDataItem, index: number) => {
+  private onItemChanging = (item: IntervalInputDataItem, index: number) => {
     // some geometry and collision detection
     // round to the unitSize
     const { step, data, onChange } = this.props;
     const { intervals } = data;
-    // item.start = util.roundTo(item.start, step);
-    // item.end = util.roundTo(item.end, step);
     const newData = {
       intervals: [
         ...intervals.slice(0, index),
@@ -72,9 +70,16 @@ export default class IntervalInput extends React.Component<Props, State> {
     onChange(newData);
   }
 
+  private onItemChangingFinish = (item: IntervalInputDataItem, index: number) => {
+    const { step } = this.props;
+    item.start = util.roundTo(item.start, step);
+    item.end = util.roundTo(item.end, step);
+    this.onItemChanging(item, index);
+  }
+
   render() {
     const { data, step } = this.props;
-    const { unitSize } = this.state;
+    const { unitSize, stepInPixels } = this.state;
 
     return (
       <div
@@ -89,9 +94,15 @@ export default class IntervalInput extends React.Component<Props, State> {
             onActive={ this.onItemActive }
             isActive={ this.isItemActive(item) }
             unitSize={ unitSize }
-            onChange={
+            stepInPixels={ stepInPixels }
+            onItemChanging={
               (item: IntervalInputDataItem) => {
-                this.onItemChange(item, index);
+                this.onItemChanging(item, index);
+              }
+            }
+            onItemChangingFinish={
+              (item: IntervalInputDataItem) => {
+                this.onItemChangingFinish(item, index);
               }
             }
           />;

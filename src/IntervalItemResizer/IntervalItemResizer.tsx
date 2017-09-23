@@ -9,6 +9,8 @@ const styles = require('./IntervalItemResizer.css');
 interface Props {
   direction: string;
   onMove?: Function;
+  onMoveFinish: Function;
+  stepInPixels: number;
 }
 
 interface State {
@@ -19,8 +21,8 @@ export default class IntervalItemResizer extends React.Component<Props, State> {
   private isInFocus: boolean;
   private lastXPosition: number; // for tracking the mouse movement
 
-  constructor() {
-    super();
+  constructor(props: Props) {
+    super(props);
     this.state = { isInFocus: false };
     this.onMouseMove = throttle(30, this.onMouseMove);
   }
@@ -31,18 +33,23 @@ export default class IntervalItemResizer extends React.Component<Props, State> {
   }
 
   private blur = () => {
+    const { onMoveFinish } = this.props;
     this.isInFocus = false;
+    onMoveFinish();
   }
 
   private onMouseMove = (event: any) => {
     if (!this.isInFocus) {
       return;
     }
-    const { onMove } = this.props;
+    const { onMove, stepInPixels } = this.props;
     const xPosition = event.clientX;
     const diff = xPosition - this.lastXPosition;
-    this.lastXPosition = xPosition;
-    onMove(diff);
+
+    if (Math.abs(diff) >= stepInPixels) {
+      this.lastXPosition = xPosition;
+      onMove(diff);
+    }
   }
 
   componentDidMount() {
@@ -63,12 +70,18 @@ export default class IntervalItemResizer extends React.Component<Props, State> {
     });
   }
 
+  private onClick = (event: any) => {
+    // click on the interval item means dragging
+    event.stopPropagation();
+  }
+
   render() {
     return (
       <div
         ref={(root) => { this.root = root }}
         className={ this.getClasses() }
         onMouseDown={ this.focus }
+        onClick={ this.onClick }
       >
       </div>
     );
