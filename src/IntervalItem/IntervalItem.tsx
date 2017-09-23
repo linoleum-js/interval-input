@@ -52,13 +52,15 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   private onLeftMove = (diff: number) => {
-    const { onChange, start, end, type, id } = this.props;
-    onChange({ start: start + diff, end, type, id });
+    const { onChange, start, end, type, id, unitSize } = this.props;
+    const diffInUnits = util.pixelsToUnits(diff, unitSize);
+    onChange({ start: start + diffInUnits, end, type, id });
   }
 
   private onRightMove = (diff: number) => {
-    const { onChange, start, end, type, id } = this.props;
-    onChange({ start, end: end + diff, type, id });
+    const { onChange, start, end, type, id, unitSize } = this.props;
+    const diffInUnits = util.pixelsToUnits(diff, unitSize);
+    onChange({ start, end: end + diffInUnits, type, id });
   }
 
   componentDidMount() {

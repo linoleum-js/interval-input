@@ -19,6 +19,17 @@ export function itemToPixels(
   };
 }
 
+export function itemToUnits(
+  item: IntervalInputDataItem,
+  unitSize: number): IntervalInputDataItem {
+
+  return {
+    ...item,
+    start: pixelsToUnits(item.start, unitSize),
+    end: pixelsToUnits(item.end, unitSize)
+  };
+}
+
 export function hasParent(node: any, parent: any) {
   while(node) {
     if (node === parent) {
@@ -27,4 +38,10 @@ export function hasParent(node: any, parent: any) {
     node = node.parentNode;
   }
   return false;
+}
+
+export function roundTo(number: number, divider: number) {
+  const n = Math.floor(number / divider);
+  const r = number % divider;
+  return n * divider + (r >= divider / 2 ? divider : 0);
 }

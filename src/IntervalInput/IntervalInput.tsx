@@ -5,6 +5,7 @@ import PropTypes = require('prop-types');
 import IntervalItem from '../IntervalItem/IntervalItem';
 import IntervalInputData from '../interfaces/IntervalInputData';
 import IntervalInputDataItem from '../interfaces/IntervalInputDataItem';
+import * as util from '../util/util';
 const styles = require('./IntervalInput.css');
 
 interface Props {
@@ -55,7 +56,20 @@ export default class IntervalInput extends React.Component<Props, State> {
   }
 
   private onItemChange = (item: IntervalInputDataItem, index: number) => {
-
+    // some geometry and collision detection
+    // round to the unitSize
+    const { step, data, onChange } = this.props;
+    const { intervals } = data;
+    // item.start = util.roundTo(item.start, step);
+    // item.end = util.roundTo(item.end, step);
+    const newData = {
+      intervals: [
+        ...intervals.slice(0, index),
+        item,
+        ...intervals.slice(index + 1)
+      ]
+    };
+    onChange(newData);
   }
 
   render() {
