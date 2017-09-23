@@ -12,6 +12,7 @@ interface Props {
   max: number;
   data: IntervalInputData;
   step: number;
+  onChange?: Function;
 }
 
 interface State {
@@ -45,12 +46,16 @@ export default class IntervalInput extends React.Component<Props, State> {
     });
   }
 
-  private onItemFocus = (itemId: string) => {
+  private onItemActive = (itemId: string) => {
     this.setState({ currentActiveId: itemId });
   }
 
   private isItemActive(item: IntervalInputDataItem) {
     return this.state.currentActiveId === item.id;
+  }
+
+  private onItemChange = (item: IntervalInputDataItem, index: number) => {
+
   }
 
   render() {
@@ -62,14 +67,19 @@ export default class IntervalInput extends React.Component<Props, State> {
         className={ styles.intervalInput }
         ref={(root) => { this.root = root; }}
       >
-        {data.intervals.map((item: IntervalInputDataItem): any => {
+        {data.intervals.map((item: IntervalInputDataItem, index: number): any => {
           return <IntervalItem
             {...item}
             step={ step }
             key={ item.id }
-            onFocus={ this.onItemFocus }
+            onActive={ this.onItemActive }
             isActive={ this.isItemActive(item) }
-            unitSize={unitSize}
+            unitSize={ unitSize }
+            onChange={
+              (item: IntervalInputDataItem) => {
+                this.onItemChange(item, index);
+              }
+            }
           />;
         })}
       </div>

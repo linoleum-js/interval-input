@@ -13,17 +13,19 @@ interface Props {
   type: string;
   step?: number;
   isActive?: boolean;
-  onFocus: Function;
+  onActive: Function;
   id: string;
   unitSize: number;
+  onChange: Function;
 }
 
 interface State {
-
 }
 
 export default class IntervalItem extends React.Component<Props, State> {
   private root: HTMLElement;
+  private lastXPosition: number;
+  private isInFocus: boolean;
 
   constructor(props: Props) {
     super(props);
@@ -33,20 +35,38 @@ export default class IntervalItem extends React.Component<Props, State> {
     console.log('menu');
   }
 
-  private onFocus = () => {
-    const { isActive, onFocus, id } = this.props;
+  private onClick = () => {
+    const { isActive, onActive, id } = this.props;
     if (!isActive) {
-      onFocus(id);
+      onActive(id);
     }
   }
 
+  private focus = (event: any) => {
+    this.isInFocus = true;
+    this.lastXPosition = event.clientX;
+  }
+
+  private blur = () => {
+    this.isInFocus = false;
+  }
+
+  private onLeftMove = (diff: number) => {
+    const { onChange, start, end, type, id } = this.props;
+    onChange({ start: start + diff, end, type, id });
+  }
+
+  private onRightMove = (diff: number) => {
+    const { onChange, start, end, type, id } = this.props;
+    onChange({ start, end: end + diff, type, id });
+  }
+
   componentDidMount() {
-    this.root.addEventListener('contextmenu', this.onContextMenu, false);
-    this.root.addEventListener('click', this.onFocus);
+    document.addEventListener('mouseup', this.blur, false);
   }
 
   componentWillUnmount() {
-    this.root.removeEventListener('contextmenu', this.onContextMenu);
+    document.removeEventListener('mouseup', this.blur);
   }
 
   private getStyle() {
@@ -63,7 +83,9 @@ export default class IntervalItem extends React.Component<Props, State> {
 
   private getClasses() {
     const { isActive } = this.props;
-    return classNames(styles.intervalItem, { 'js-interval-item-active': isActive });
+    return classNames(styles.intervalItem, {
+      [styles.intervalItemActive]: isActive
+    });
   }
 
   render() {
@@ -73,11 +95,20 @@ export default class IntervalItem extends React.Component<Props, State> {
       <div
         className={ this.getClasses() }
         ref={(root) => { this.root = root; }}
+        onContextMenu={ this.onContextMenu }
+        onClick={ this.onClick }
+        onMouseDown={ this.focus }
         style={ this.getStyle() }
       >
-        <IntervalItemResizer direction="left" />
+        <IntervalItemResizer
+          direction="left"
+          onMove={ this.onLeftMove }
+        />
 
-        <IntervalItemResizer direction="right" />
+        <IntervalItemResizer
+          direction="right"
+          onMove={ this.onRightMove }
+        />
       </div>
     );
   }
