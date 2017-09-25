@@ -30,6 +30,8 @@ export default class IntervalItemResizer extends React.Component<Props, State> {
   private focus = (event: any) => {
     this.isInFocus = true;
     this.lastXPosition = event.clientX;
+    // click on the interval item means dragging
+    event.stopPropagation();
   }
 
   private blur = () => {
@@ -64,15 +66,10 @@ export default class IntervalItemResizer extends React.Component<Props, State> {
 
   private getClasses() {
     const { direction } = this.props
-    return classNames(styles.intervalInputResizer,{
+    return classNames(styles.intervalInputResizer, {
       [styles.intervalInputResizerLeft]: direction === 'left',
       [styles.intervalInputResizerRight]: direction === 'right'
     });
-  }
-
-  private onClick = (event: any) => {
-    // click on the interval item means dragging
-    event.stopPropagation();
   }
 
   render() {
@@ -81,7 +78,6 @@ export default class IntervalItemResizer extends React.Component<Props, State> {
         ref={(root) => { this.root = root }}
         className={ this.getClasses() }
         onMouseDown={ this.focus }
-        onClick={ this.onClick }
       >
       </div>
     );

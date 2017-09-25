@@ -1,7 +1,7 @@
 import React = require('react');
 import ReactDOM = require('react-dom');
 
-import IntervalInput from './IntervalInput/IntervalInput';
+import IntervalInputContainer from './IntervalInput/IntervalInputContainer';
 import IntervalInputData from './interfaces/IntervalInputData';
 
 class App extends React.Component<any, any> {
@@ -29,12 +29,13 @@ class App extends React.Component<any, any> {
   }
 
   render() {
-    return (<IntervalInput
+    return (<IntervalInputContainer
       min={0}
       max={86400}
       data={this.state.data}
       step={60 * 5} // 5 minute step
       onChange={this.onChange}
+      minWidth={60 * 20}
     />);
   }
 }

@@ -5,16 +5,9 @@ import PropTypes = require('prop-types');
 import IntervalItem from '../IntervalItem/IntervalItem';
 import IntervalInputData from '../interfaces/IntervalInputData';
 import IntervalInputDataItem from '../interfaces/IntervalInputDataItem';
+import IntervalInputProps from './IntervalInputProps';
 import * as util from '../util/util';
 const styles = require('./IntervalInput.css');
-
-interface Props {
-  min: number;
-  max: number;
-  data: IntervalInputData;
-  step: number;
-  onChange?: Function;
-}
 
 interface State {
   unitSize: number;
@@ -25,11 +18,11 @@ interface State {
 /**
  *
  */
-export default class IntervalInput extends React.Component<Props, State> {
+export default class IntervalInput extends React.Component<IntervalInputProps, State> {
   private root: HTMLElement;
   private numberOfSteps: number;
 
-  constructor(props: Props) {
+  constructor(props: IntervalInputProps) {
     super(props);
     const { min, max, step } = props;
     this.state = { unitSize: 1, stepInPixels: 1 };
@@ -55,11 +48,25 @@ export default class IntervalInput extends React.Component<Props, State> {
     return this.state.currentActiveId === item.id;
   }
 
+  private checkItemMinWidth(item: IntervalInputDataItem) {
+    const { minWidth } = this.props;
+    return item.end - item.start >= minWidth;
+  }
+
   private onItemChanging = (item: IntervalInputDataItem, index: number) => {
     // some geometry and collision detection
     // round to the unitSize
     const { step, data, onChange } = this.props;
     const { intervals } = data;
+    const prevItem = intervals[index - 1];
+    const nextItem = intervals[index + 1];
+
+    // When we move or resize item, we have to move and resize
+    // next and prev items
+    if (!this.checkItemMinWidth(item)) {
+      return;
+    }
+
     const newData = {
       intervals: [
         ...intervals.slice(0, index),

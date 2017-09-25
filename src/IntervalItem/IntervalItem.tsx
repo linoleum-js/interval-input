@@ -32,6 +32,13 @@ export default class IntervalItem extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
+    const noop = () => {};
+    if (props.type === 'empty') {
+      this.onClick = noop;
+      this.onMoveFinish = noop;
+      this.onDrag = noop;
+      this.onMove = noop;
+    }
   }
 
   private onContextMenu = () => {
@@ -40,7 +47,6 @@ export default class IntervalItem extends React.Component<Props, State> {
 
   private onClick = () => {
     const { isActive, onActive, id } = this.props;
-    console.log('click');
     if (!isActive) {
       onActive(id);
     }
@@ -53,10 +59,6 @@ export default class IntervalItem extends React.Component<Props, State> {
 
   private blur = () => {
     this.isInFocus = false;
-  }
-
-  private onItemChangingFinish = () => {
-
   }
 
   private onLeftMove = (diff: number) => {
@@ -78,12 +80,39 @@ export default class IntervalItem extends React.Component<Props, State> {
     onItemChangingFinish({ start, end, type, id });
   }
 
+  private onMove = (diff: number) => {
+    const { onItemChanging, start, end, type, id, unitSize } = this.props;
+    const diffInUnits = util.pixelsToUnits(diff, unitSize);
+    const newItem = {
+      start: start + diffInUnits,
+      end: end + diffInUnits,
+      type, id
+    };
+    onItemChanging(newItem);
+  }
+
+  private onDrag = (event: any) => {
+    if (!this.isInFocus) {
+      return;
+    }
+    const { onItemChanging, stepInPixels } = this.props;
+    const xPosition = event.clientX;
+    const diff = xPosition - this.lastXPosition;
+
+    if (Math.abs(diff) >= stepInPixels) {
+      this.lastXPosition = xPosition;
+      this.onMove(diff);
+    }
+  }
+
   componentDidMount() {
     document.addEventListener('mouseup', this.blur, false);
+    document.addEventListener('mousemove', this.onDrag, false);
   }
 
   componentWillUnmount() {
     document.removeEventListener('mouseup', this.blur);
+    document.removeEventListener('mousemove', this.onDrag);
   }
 
   private getStyle() {
@@ -117,19 +146,19 @@ export default class IntervalItem extends React.Component<Props, State> {
         onMouseDown={ this.focus }
         style={ this.getStyle() }
       >
-        <IntervalItemResizer
+        {type !== 'empty' && <IntervalItemResizer
           direction="left"
           stepInPixels={ stepInPixels }
           onMove={ this.onLeftMove }
           onMoveFinish={ this.onMoveFinish }
-        />
-        { this.props.start + ' ' + this.props.end }
-        <IntervalItemResizer
+        />}
+
+        {type !== 'empty' && <IntervalItemResizer
           direction="right"
           stepInPixels={ stepInPixels }
           onMove={ this.onRightMove }
           onMoveFinish={ this.onMoveFinish }
-        />
+        />}
       </div>
     );
   }
