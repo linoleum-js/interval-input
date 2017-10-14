@@ -40,8 +40,19 @@ export function hasParent(node: any, parent: any) {
   return false;
 }
 
-export function roundTo(number: number, divider: number) {
+export function roundTo(number: number, divider: number): number {
   const n = Math.floor(number / divider);
   const r = number % divider;
   return n * divider + (r >= divider / 2 ? divider : 0);
+}
+
+export function padWithZero(number: number): string {
+  return (number < 9 ? '0': '') + number;
+}
+
+export function secToHHMM(seconds: number): string {
+  seconds = Math.round(seconds);
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  return padWithZero(hours) + ':' + padWithZero(minutes);
 }

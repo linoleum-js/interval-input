@@ -1,16 +1,61 @@
 
-.intervalInputResizer {
+.resizer {
   position: absolute;
-  width: 10px;
-  height: 100%;
-  background-color: #000;
-  top: 0;
+  width: 1px;
+  height: calc(100% + 20px);
+  background-color: #2f4050;
+  bottom: 0;
 }
 
-.intervalInputResizerLeft {
+.resizerMark {
+  height: 15px;
+  background-color: #2f4050;
+  position: absolute;
+  cursor: -webkit-grab;
+  cursor: grab;
+  color: #fff;
+  font-size: 10px;
+  padding: 0 5px;
+}
+
+.resizerMarkGrabbing {
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
+}
+
+.resizerLeft .resizerMark {
+  right: 0;
+}
+
+
+.resizerLeft .resizerMark:before,
+.resizerRight .resizerMark:after {
+  content: ' ';
+  position: absolute;
+}
+
+.resizerLeft .resizerMark:before {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 7.5px 5px 7.5px 0;
+  border-color: transparent #2f4050 transparent transparent;
+  left: -5px;
+}
+
+.resizerRight .resizerMark:after {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 7.5px 0 7.5px 5px;
+  border-color: transparent transparent transparent #2f4050;
+  right: -5px;
+}
+
+.resizerLeft {
   left: 0;
 }
 
-.intervalInputResizerRight {
+.resizerRight {
   right: 0;
 }

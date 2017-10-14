@@ -150,18 +150,20 @@ export default class IntervalItem extends React.Component<Props, State> {
         onMouseDown={ this.focus }
         style={ this.getStyle() }
       >
-        {type !== 'empty' && <IntervalItemResizer
+        {type !== 'empty' && isActive && <IntervalItemResizer
           direction="left"
           stepInPixels={ stepInPixels }
           onMove={ this.onLeftMove }
           onMoveFinish={ this.onMoveFinish }
+          value={ start }
         />}
 
-        {type !== 'empty' && <IntervalItemResizer
+        {type !== 'empty' && isActive && <IntervalItemResizer
           direction="right"
           stepInPixels={ stepInPixels }
           onMove={ this.onRightMove }
           onMoveFinish={ this.onMoveFinish }
+          value={ end }
         />}
       </div>
     );

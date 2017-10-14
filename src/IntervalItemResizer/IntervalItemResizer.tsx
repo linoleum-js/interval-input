@@ -11,6 +11,7 @@ interface Props {
   onMove?: Function;
   onMoveFinish: Function;
   stepInPixels: number;
+  value: number;
 }
 
 interface State {
@@ -71,21 +72,34 @@ export default class IntervalItemResizer extends React.Component<Props, State> {
     document.removeEventListener('mousemove', this.onMouseMove);
   }
 
-  private getClasses() {
+  private getWrapClasses() {
     const { direction } = this.props
-    return classNames(styles.intervalInputResizer, {
-      [styles.intervalInputResizerLeft]: direction === 'left',
-      [styles.intervalInputResizerRight]: direction === 'right'
+    return classNames(styles.resizer, {
+      [styles.resizerLeft]: direction === 'left',
+      [styles.resizerRight]: direction === 'right'
+    });
+  }
+
+  private getMarkClasses() {
+    return classNames(styles.resizerMark, {
+      [styles.resizerMarkGrabbing]: this.isInFocus
     });
   }
 
   render() {
+    const { value } = this.props;
+
     return (
       <div
         ref={(root) => { this.root = root }}
-        className={ this.getClasses() }
+        className={ this.getWrapClasses() }
         onMouseDown={ this.focus }
       >
+        <div
+          className={ this.getMarkClasses() }
+        >
+          { util.secToHHMM(value) }
+        </div>
       </div>
     );
   }
