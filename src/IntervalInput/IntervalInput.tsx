@@ -25,7 +25,7 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
   constructor(props: IntervalInputProps) {
     super(props);
     const { min, max, step } = props;
-    this.state = { unitSize: 1, stepInPixels: 1 };
+    this.state = { unitSize: 0, stepInPixels: 0 };
   }
 
   componentDidMount() {
@@ -33,10 +33,14 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
   }
 
   private initialize = () => {
+    let { unitSize, stepInPixels } = this.state;
+    if (unitSize && stepInPixels) {
+      return;
+    }
     const width = this.root.offsetWidth;
     const { min, max, step } = this.props;
-    const unitSize = width / (max - min);
-    const stepInPixels = util.unitsToPixels(step, unitSize);
+    unitSize = width / (max - min);
+    stepInPixels = util.unitsToPixels(step, unitSize);
     this.setState({ unitSize, stepInPixels });
   }
 
@@ -44,34 +48,69 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
     this.setState({ currentActiveId: itemId });
   }
 
-  private isItemActive(item: IntervalInputDataItem) {
+  private isItemActive(item: IntervalInputDataItem): boolean {
     return this.state.currentActiveId === item.id;
   }
 
-  private checkItemMinWidth(item: IntervalInputDataItem) {
+  private checkItemMinWidth(item: IntervalInputDataItem): boolean {
     const { minWidth } = this.props;
     return item.end - item.start >= minWidth;
   }
 
+  // TODO: split
   private onItemChanging = (item: IntervalInputDataItem, index: number) => {
     // some geometry and collision detection
     // round to the unitSize
-    const { step, data, onChange } = this.props;
+    const { step, data, onChange, max } = this.props;
     const { intervals } = data;
     const prevItem = intervals[index - 1];
     const nextItem = intervals[index + 1];
+    let prevRemoved = 0;
+    let nextRemoved = 0;
 
     // When we move or resize item, we have to move and resize
     // next and prev items
     if (!this.checkItemMinWidth(item)) {
       return;
     }
+    // collapse prev item
+    if (prevItem) {
+      const keepPrev = this.checkItemMinWidth(prevItem);
+      if (!keepPrev) {
+        const prevPrevItem = intervals[index - 2];
+        if (prevPrevItem) {
+          item.start = prevPrevItem.end;
+          prevRemoved = 1;
+        } else {
+          item.start = 0;
+        }
+      }
+    }
+    if (nextItem) {
+      const keepNext = this.checkItemMinWidth(nextItem);
+      if (!keepNext) {
+        const nextNextItem = intervals[index + 2];
+        if (nextNextItem) {
+          item.end = nextNextItem.start;
+          nextRemoved = 1;
+        } else {
+          item.end = max;
+        }
+      }
+    }
+
+    if (prevItem) {
+      prevItem.end = item.start;
+    }
+    if (nextItem) {
+      nextItem.start = item.end;
+    }
 
     const newData = {
       intervals: [
-        ...intervals.slice(0, index),
+        ...intervals.slice(0, index - prevRemoved),
         item,
-        ...intervals.slice(index + 1)
+        ...intervals.slice(index + 1 + nextRemoved)
       ]
     };
     onChange(newData);
@@ -87,6 +126,7 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
   render() {
     const { data, step } = this.props;
     const { unitSize, stepInPixels } = this.state;
+    const length = data.intervals.length;
 
     return (
       <div
@@ -102,6 +142,7 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
             isActive={ this.isItemActive(item) }
             unitSize={ unitSize }
             stepInPixels={ stepInPixels }
+            draggable={ index !== 0 && index !== length - 1 }
             onItemChanging={
               (item: IntervalInputDataItem) => {
                 this.onItemChanging(item, index);

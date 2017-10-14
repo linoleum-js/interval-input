@@ -15,10 +15,12 @@ export default class IntervalInputContainer extends React.Component<IntervalInpu
     const result: Array<IntervalInputDataItem> = [];
     const list = data.intervals;
     let prevEnd = 0;
-    list.forEach((item: IntervalInputDataItem) => {
+    list.forEach((item: IntervalInputDataItem, index: number) => {
+      console.log(index, item);
       if (item.start > prevEnd) {
         result.push({ type: 'empty', start: prevEnd, end: item.start, id: uuid() });
       }
+      prevEnd = item.end;
       result.push(item);
     });
     const lastItem = list[list.length - 1];
@@ -38,15 +40,19 @@ export default class IntervalInputContainer extends React.Component<IntervalInpu
 
   render() {
     const { data, max, onChange, ...rest } = this.props;
+    const dataFilledWithEmpty = this.fillWithEmptyItems(data, max);
     return (
-      <IntervalInput
-        { ...rest }
-        data={ this.fillWithEmptyItems(data, max) }
-        max={ max }
-        onChange={(data: IntervalInputData) => {
-          onChange(this.removeEmptyItems(data))
-        }}
-      />
+      <div>
+        <IntervalInput
+          { ...rest }
+          data={ dataFilledWithEmpty }
+          max={ max }
+          onChange={(data: IntervalInputData) => {
+            onChange(this.removeEmptyItems(data))
+          }}
+        />
+        <pre>{ JSON.stringify(dataFilledWithEmpty, null, 2 ) }</pre>
+      </div>
     );
   }
 }

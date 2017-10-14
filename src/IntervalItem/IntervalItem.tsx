@@ -20,6 +20,7 @@ interface Props {
   unitSize: number;
   onItemChanging: Function;
   onItemChangingFinish: Function;
+  draggable: boolean;
 }
 
 interface State {
@@ -38,6 +39,9 @@ export default class IntervalItem extends React.Component<Props, State> {
       this.onMoveFinish = noop;
       this.onDrag = noop;
       this.onMove = noop;
+    }
+    if (!props.draggable) {
+      this.onDrag = noop;
     }
   }
 

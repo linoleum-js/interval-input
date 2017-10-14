@@ -3,4 +3,5 @@
   height: 50px;
   background-color: #ccc;
   position: relative;
+  user-select: none;
 }

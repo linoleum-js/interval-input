@@ -1,5 +1,7 @@
 
-interface Props {
+import IntervalInputData from '../interfaces/IntervalInputData';
+
+interface IntervalInputProps {
   min: number;
   max: number;
   data: IntervalInputData;
@@ -8,4 +10,4 @@ interface Props {
   minWidth: number;
 }
 
-export default Props;
+export default IntervalInputProps;

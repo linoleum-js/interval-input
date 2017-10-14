@@ -19,11 +19,11 @@ interface State {
 export default class IntervalItemResizer extends React.Component<Props, State> {
   private root: HTMLElement;
   private isInFocus: boolean;
+  private isMoving: boolean;
   private lastXPosition: number; // for tracking the mouse movement
 
   constructor(props: Props) {
     super(props);
-    this.state = { isInFocus: false };
     this.onMouseMove = throttle(30, this.onMouseMove);
   }
 
@@ -35,15 +35,22 @@ export default class IntervalItemResizer extends React.Component<Props, State> {
   }
 
   private blur = () => {
-    const { onMoveFinish } = this.props;
-    this.isInFocus = false;
-    onMoveFinish();
+    if (!this.isInFocus) {
+      return;
+    }
+    if (this.isMoving) {
+      const { onMoveFinish } = this.props;
+      this.isInFocus = false;
+      onMoveFinish();
+      this.isMoving = false;
+    }
   }
 
   private onMouseMove = (event: any) => {
     if (!this.isInFocus) {
       return;
     }
+    this.isMoving = true;
     const { onMove, stepInPixels } = this.props;
     const xPosition = event.clientX;
     const diff = xPosition - this.lastXPosition;
