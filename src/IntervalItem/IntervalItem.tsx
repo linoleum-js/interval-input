@@ -7,6 +7,7 @@ import * as util from '../util/util';
 import types from '../util/types';
 import IntervalItemResizer from '../IntervalItemResizer/IntervalItemResizer';
 import IntervalInputDataItem from '../interfaces/IntervalInputDataItem';
+import IntervalContextMenu from '../IntervalContextMenu/IntervalContextMenu';
 
 interface Props {
   start: number;
@@ -21,9 +22,11 @@ interface Props {
   onItemChanging: Function;
   onItemChangingFinish: Function;
   draggable: boolean;
+  canCreate: boolean;
 }
 
 interface State {
+  showMemu: boolean;
 }
 
 export default class IntervalItem extends React.Component<Props, State> {
@@ -43,17 +46,17 @@ export default class IntervalItem extends React.Component<Props, State> {
     if (!props.draggable) {
       this.onDrag = noop;
     }
+    this.state = {
+      showMemu: false
+    };
   }
 
-  private onContextMenu = () => {
-    console.log('menu');
+  private onContextMenu = (event: any) => {
+    event.preventDefault();
+    this.setState({ showMemu: true });
   }
 
   private onClick = () => {
-    const { isActive, onActive, id } = this.props;
-    if (!isActive) {
-      onActive(id);
-    }
   }
 
   private focus = (event: any) => {
@@ -63,6 +66,10 @@ export default class IntervalItem extends React.Component<Props, State> {
     }
     this.isInFocus = true;
     this.lastXPosition = event.clientX;
+    const { isActive, onActive, id } = this.props;
+    if (!isActive) {
+      onActive(id);
+    }
   }
 
   private blur = () => {
@@ -116,11 +123,20 @@ export default class IntervalItem extends React.Component<Props, State> {
   componentDidMount() {
     document.addEventListener('mouseup', this.blur, false);
     document.addEventListener('mousemove', this.onDrag, false);
+    document.addEventListener('click', this.onDocumentClick, false);
   }
 
   componentWillUnmount() {
     document.removeEventListener('mouseup', this.blur);
     document.removeEventListener('mousemove', this.onDrag);
+    document.removeEventListener('click', this.onDocumentClick);
+  }
+
+  private onDocumentClick = () => {
+    console.log('doc click');
+    if (this.state.showMemu) {
+      this.setState({ showMemu: false });
+    }
   }
 
   private getStyle() {
@@ -143,7 +159,9 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   render() {
-    const { start, end, type, isActive, stepInPixels } = this.props;
+    const { start, end, type, isActive, stepInPixels, canCreate } = this.props;
+    const { showMemu } = this.state;
+    const isEmpty = (type === 'empty');
 
     return (
       <div
@@ -154,7 +172,7 @@ export default class IntervalItem extends React.Component<Props, State> {
         onMouseDown={ this.focus }
         style={ this.getStyle() }
       >
-        {type !== 'empty' && isActive && <IntervalItemResizer
+        {!isEmpty && isActive && <IntervalItemResizer
           direction="left"
           stepInPixels={ stepInPixels }
           onMove={ this.onLeftMove }
@@ -162,12 +180,19 @@ export default class IntervalItem extends React.Component<Props, State> {
           value={ start }
         />}
 
-        {type !== 'empty' && isActive && <IntervalItemResizer
+        {!isEmpty && isActive && <IntervalItemResizer
           direction="right"
           stepInPixels={ stepInPixels }
           onMove={ this.onRightMove }
           onMoveFinish={ this.onMoveFinish }
           value={ end }
+        />}
+        {showMemu && <IntervalContextMenu
+          canCreate={ canCreate }
+          isEmpty={ isEmpty }
+          onCreate={() =>{}}
+          onRemove={() => {}}
+          onChange={()=>{}}
         />}
       </div>
     );

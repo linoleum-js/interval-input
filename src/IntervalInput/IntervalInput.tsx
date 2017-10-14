@@ -123,6 +123,13 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
     this.onItemChanging(item, index);
   }
 
+  private canCreateInside(item: IntervalInputDataItem) {
+    const { start, end } = item;
+    const { minWidth } = this.props;
+    const width = end - start;
+    return width / 3 > minWidth;
+  }
+
   render() {
     const { data, step } = this.props;
     const { unitSize, stepInPixels } = this.state;
@@ -143,6 +150,7 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
             unitSize={ unitSize }
             stepInPixels={ stepInPixels }
             draggable={ index !== 0 && index !== length - 1 }
+            canCreate={ this.canCreateInside(item) }
             onItemChanging={
               (item: IntervalInputDataItem) => {
                 this.onItemChanging(item, index);
