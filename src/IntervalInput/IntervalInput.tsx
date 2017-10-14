@@ -71,7 +71,6 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
     // When we move or resize item, we have to move and resize
     // next and prev items
     if (!this.checkItemMinWidth(item)) {
-      console.log(item.start, item.end, this.props.minWidth);
       return;
     }
     // collapse prev item

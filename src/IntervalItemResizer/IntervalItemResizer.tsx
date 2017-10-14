@@ -15,40 +15,43 @@ interface Props {
 }
 
 interface State {
+  isInFocus: boolean;
 }
 
 export default class IntervalItemResizer extends React.Component<Props, State> {
   private root: HTMLElement;
-  private isInFocus: boolean;
   private isMoving: boolean;
   private lastXPosition: number; // for tracking the mouse movement
 
   constructor(props: Props) {
     super(props);
     this.onMouseMove = throttle(30, this.onMouseMove);
+    this.state = {
+      isInFocus: false
+    };
   }
 
   private focus = (event: any) => {
-    this.isInFocus = true;
     this.lastXPosition = event.clientX;
     // click on the interval item means dragging
     event.stopPropagation();
+    this.setState({ isInFocus: true });
   }
 
   private blur = () => {
-    if (!this.isInFocus) {
+    if (!this.state.isInFocus) {
       return;
     }
     if (this.isMoving) {
       const { onMoveFinish } = this.props;
-      this.isInFocus = false;
       onMoveFinish();
       this.isMoving = false;
+      this.setState({ isInFocus: false });
     }
   }
 
   private onMouseMove = (event: any) => {
-    if (!this.isInFocus) {
+    if (!this.state.isInFocus) {
       return;
     }
     this.isMoving = true;
@@ -81,8 +84,9 @@ export default class IntervalItemResizer extends React.Component<Props, State> {
   }
 
   private getMarkClasses() {
+    const { isInFocus } = this.state;
     return classNames(styles.resizerMark, {
-      [styles.resizerMarkGrabbing]: this.isInFocus
+      [styles.resizerMarkGrabbing]: isInFocus
     });
   }
 

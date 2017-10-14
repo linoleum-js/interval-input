@@ -16,7 +16,6 @@ export default class IntervalInputContainer extends React.Component<IntervalInpu
     const list = data.intervals;
     let prevEnd = 0;
     list.forEach((item: IntervalInputDataItem, index: number) => {
-      console.log(index, item);
       if (item.start > prevEnd) {
         result.push({ type: 'empty', start: prevEnd, end: item.start, id: uuid() });
       }

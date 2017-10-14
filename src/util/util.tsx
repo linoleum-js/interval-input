@@ -47,7 +47,7 @@ export function roundTo(number: number, divider: number): number {
 }
 
 export function padWithZero(number: number): string {
-  return (number < 9 ? '0': '') + number;
+  return (number < 10 ? '0': '') + number;
 }
 
 export function secToHHMM(seconds: number): string {

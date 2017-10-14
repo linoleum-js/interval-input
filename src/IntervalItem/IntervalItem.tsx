@@ -57,6 +57,10 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   private focus = (event: any) => {
+    // only left button, to prevent dragging on context menu opening
+    if (event.button !== 0) {
+      return;
+    }
     this.isInFocus = true;
     this.lastXPosition = event.clientX;
   }
