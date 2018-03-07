@@ -5,8 +5,8 @@ import IntervalInputContainer from './IntervalInput/IntervalInputContainer';
 import IntervalInputData from './interfaces/IntervalInputData';
 
 class App extends React.Component<any, any> {
-  constructor() {
-    super();
+  constructor(props: any) {
+    super(props);
     this.state = {
       data: {
         intervals: [{
@@ -41,6 +41,6 @@ class App extends React.Component<any, any> {
 }
 
 ReactDOM.render(
-  <App />,
+  <App /> as any,
   document.getElementById('container')
 );

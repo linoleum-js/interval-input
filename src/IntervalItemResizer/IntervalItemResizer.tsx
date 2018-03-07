@@ -46,6 +46,8 @@ export default class IntervalItemResizer extends React.Component<Props, State> {
       const { onMoveFinish } = this.props;
       onMoveFinish();
       this.isMoving = false;
+    }
+    if (this.state.isInFocus) {
       this.setState({ isInFocus: false });
     }
   }

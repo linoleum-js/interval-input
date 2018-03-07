@@ -149,6 +149,7 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
             isActive={ this.isItemActive(item) }
             unitSize={ unitSize }
             stepInPixels={ stepInPixels }
+            preventResize={{ left: index === 0, right: index === length - 1 }}
             draggable={ index !== 0 && index !== length - 1 }
             canCreate={ this.canCreateInside(item) }
             onItemChanging={

@@ -23,6 +23,7 @@ interface Props {
   onItemChangingFinish: Function;
   draggable: boolean;
   canCreate: boolean;
+  preventResize: any;
 }
 
 interface State {
@@ -42,9 +43,7 @@ export default class IntervalItem extends React.Component<Props, State> {
       this.onMoveFinish = noop;
       this.onDrag = noop;
       this.onMove = noop;
-    }
-    if (!props.draggable) {
-      this.onDrag = noop;
+      this.focus = noop;
     }
     this.state = {
       showMemu: false
@@ -96,6 +95,9 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   private onMove = (diff: number) => {
+    if (!this.props.draggable) {
+      return;
+    }
     const { onItemChanging, start, end, type, id, unitSize } = this.props;
     const diffInUnits = util.pixelsToUnits(diff, unitSize);
     const newItem = {
@@ -133,7 +135,6 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   private onDocumentClick = () => {
-    console.log('doc click');
     if (this.state.showMemu) {
       this.setState({ showMemu: false });
     }
@@ -159,7 +160,8 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   render() {
-    const { start, end, type, isActive, stepInPixels, canCreate } = this.props;
+    const { start, end, type, isActive, stepInPixels, canCreate,
+            preventResize } = this.props;
     const { showMemu } = this.state;
     const isEmpty = (type === 'empty');
 
@@ -180,7 +182,7 @@ export default class IntervalItem extends React.Component<Props, State> {
           value={ start }
         />}
 
-        {!isEmpty && isActive && <IntervalItemResizer
+        {!isEmpty && !preventResize.right && isActive && <IntervalItemResizer
           direction="right"
           stepInPixels={ stepInPixels }
           onMove={ this.onRightMove }
@@ -190,9 +192,9 @@ export default class IntervalItem extends React.Component<Props, State> {
         {showMemu && <IntervalContextMenu
           canCreate={ canCreate }
           isEmpty={ isEmpty }
-          onCreate={() =>{}}
+          onCreate={() => {}}
           onRemove={() => {}}
-          onChange={()=>{}}
+          onChange={() => {}}
         />}
       </div>
     );
