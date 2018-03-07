@@ -182,7 +182,7 @@ export default class IntervalItem extends React.Component<Props, State> {
           value={ start }
         />}
 
-        {!isEmpty && !preventResize.right && isActive && <IntervalItemResizer
+        {!isEmpty && isActive && <IntervalItemResizer
           direction="right"
           stepInPixels={ stepInPixels }
           onMove={ this.onRightMove }

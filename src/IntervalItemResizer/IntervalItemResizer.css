@@ -9,6 +9,7 @@
 
 .resizerMark {
   height: 15px;
+  line-height: 15px;
   background-color: #2f4050;
   position: absolute;
   cursor: -webkit-grab;

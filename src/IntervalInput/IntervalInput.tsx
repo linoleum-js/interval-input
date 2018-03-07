@@ -57,6 +57,56 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
     return item.end - item.start >= minWidth;
   }
 
+  private keepItemInBounds(item: IntervalInputDataItem): void {
+    const { max } = this.props;
+    if (item.end > max) {
+      item.end = max;
+    }
+    if (item.start < 0) {
+      item.start = 0;
+    }
+  }
+
+  private collapsePrevItem(item: IntervalInputDataItem, index: number):number {
+    const { data } = this.props;
+    const { intervals } = data;
+    const prevItem = intervals[index - 1];
+    
+    if (prevItem) {
+      const keepPrev = this.checkItemMinWidth(prevItem);
+      if (!keepPrev) {
+        const prevPrevItem = intervals[index - 2];
+        if (prevPrevItem) {
+          item.start = prevPrevItem.end;
+          return 1;
+        } else {
+          item.start = 0;
+        }
+      }
+    }
+    return 0;
+  }
+
+  private collapseNextItem(item: IntervalInputDataItem, index: number):number {
+    const { data, max } = this.props;
+    const { intervals } = data;
+    const nextItem = intervals[index + 1];
+
+    if (nextItem) {
+      const keepNext = this.checkItemMinWidth(nextItem);
+      if (!keepNext) {
+        const nextNextItem = intervals[index + 2];
+        if (nextNextItem) {
+          item.end = nextNextItem.start;
+          return 1;
+        } else {
+          item.end = max;
+        }
+      }
+    }
+    return 0;
+  }
+
   // TODO: split
   private onItemChanging = (item: IntervalInputDataItem, index: number) => {
     // some geometry and collision detection
@@ -68,36 +118,16 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
     let prevRemoved = 0;
     let nextRemoved = 0;
 
+    // check bounds
+    this.keepItemInBounds(item);
+
     // When we move or resize item, we have to move and resize
     // next and prev items
     if (!this.checkItemMinWidth(item)) {
       return;
     }
-    // collapse prev item
-    if (prevItem) {
-      const keepPrev = this.checkItemMinWidth(prevItem);
-      if (!keepPrev) {
-        const prevPrevItem = intervals[index - 2];
-        if (prevPrevItem) {
-          item.start = prevPrevItem.end;
-          prevRemoved = 1;
-        } else {
-          item.start = 0;
-        }
-      }
-    }
-    if (nextItem) {
-      const keepNext = this.checkItemMinWidth(nextItem);
-      if (!keepNext) {
-        const nextNextItem = intervals[index + 2];
-        if (nextNextItem) {
-          item.end = nextNextItem.start;
-          nextRemoved = 1;
-        } else {
-          item.end = max;
-        }
-      }
-    }
+    this.collapsePrevItem(item, index);
+    this.collapseNextItem(item, index);
 
     if (prevItem) {
       prevItem.end = item.start;
