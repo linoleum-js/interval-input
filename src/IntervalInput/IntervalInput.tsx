@@ -154,6 +154,7 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
   }
 
   private onItemChangingFinish = (item: IntervalInputDataItem, index: number) => {
+    this.setState({ currentOpenMenu: null });
     this.onItemChanging(item, index);
   }
 
@@ -229,16 +230,8 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
             canCreate={ this.canCreateInside(item) }
             onRemove={ this.onRemove }
             onCreate={ this.onCreate }
-            onItemChanging={
-              (item: IntervalInputDataItem) => {
-                this.onItemChanging(item, index);
-              }
-            }
-            onItemChangingFinish={
-              (item: IntervalInputDataItem) => {
-                this.onItemChangingFinish(item, index);
-              }
-            }
+            onItemChanging={ this.onItemChanging }
+            onItemChangingFinish={ this.onItemChangingFinish }
           />;
         })}
       </div>

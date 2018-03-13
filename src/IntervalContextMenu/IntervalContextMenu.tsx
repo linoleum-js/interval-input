@@ -76,7 +76,10 @@ export default class IntervalContextMenu extends React.Component<Props, State> {
               key={typeName}
               onClick={(event) => { this.onTypeChange(typeName, event) }}
               className={ this.getItemClass(typeName) }
-            >{type.viewName}</span>;
+            >
+              {type.viewName}
+              <i style={{ backgroundColor: type.color }}></i>
+            </span>;
           })}
         </div>}
       </div>

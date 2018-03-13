@@ -16,7 +16,7 @@ export default {
     viewName: 'Type 4'
   },
   'empty': {
-    color: 'transparent',
+    color: '#ccc',
     noDropdown: true,
     viewName: 'Not specified'
   }
