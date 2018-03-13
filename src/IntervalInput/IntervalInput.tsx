@@ -31,7 +31,7 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
 
   componentDidMount() {
     this.initialize();
-    document.addEventListener('click', this.onDocumentClick);
+    document.addEventListener('click', this.onDocumentClick, false);
   }
 
   componentWillUnmount() {
@@ -89,39 +89,26 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
   }
 
   private collapsePrevItem(item: IntervalInputDataItem, index: number):number {
-    const { data } = this.props;
-    const { intervals } = data;
-    const prevItem = intervals[index - 1];
-
-    // if there's is anything to collapse
-    if (prevItem) {
-      const mustBeRemoved = this.mustBeRemoved(prevItem);
-      if (mustBeRemoved) {
-        const prevPrevItem = intervals[index - 2];
-        if (prevPrevItem) {
-          item.start = prevPrevItem.end;
-        } else {
-          item.start = 0;
-        }
-        return 1;
-      }
-    }
-    return 0;
+    const { intervals } = this.props.data;
+    return this.collapse(item, intervals[index - 1], intervals[index - 2], 'start', 'end');
   }
 
   private collapseNextItem(item: IntervalInputDataItem, index: number):number {
+    const { intervals } = this.props.data;
+    return this.collapse(item, intervals[index + 1], intervals[index + 2], 'end', 'start');
+  }
+
+  private collapse(item: any, next: any, nextNext: any, key1: string, key2: string):number {
     const { data, max } = this.props;
     const { intervals } = data;
-    const nextItem = intervals[index + 1];
 
-    if (nextItem) {
-      const removingNeeded = this.mustBeRemoved(nextItem);
+    if (next) {
+      const removingNeeded = this.mustBeRemoved(next);
       if (removingNeeded) {
-        const nextNextItem = intervals[index + 2];
-        if (nextNextItem) {
-          item.end = nextNextItem.start;
+        if (nextNext) {
+          item[key1] = nextNext[key2];
         } else {
-          item.end = max;
+          item[key1] = max;
         }
         return 1;
       }
@@ -129,7 +116,6 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
     return 0;
   }
 
-  // TODO: split
   private onItemChanging = (item: IntervalInputDataItem, index: number) => {
     // some geometry and collision detection
     // round to the unitSize
@@ -172,8 +158,6 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
 
   private onItemChangingFinish = (item: IntervalInputDataItem, index: number) => {
     const { step } = this.props;
-    // item.start = util.roundTo(item.start, step);
-    // item.end = util.roundTo(item.end, step);
     this.onItemChanging(item, index);
   }
 

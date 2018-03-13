@@ -66,6 +66,7 @@ export default class IntervalItem extends React.Component<Props, State> {
     if (event.button !== 0) {
       return;
     }
+    event.nativeEvent.stopImmediatePropagation();
     this.isInFocus = true;
     this.lastXPosition = event.clientX;
     const { isActive, onActive, id } = this.props;
