@@ -44,7 +44,6 @@ export function roundTo(number: number, divider: number): number {
   const n = Math.floor(number / divider);
   const r = number % divider;
   return n * divider + (r >= divider / 2 ? divider : 0);
-  // return Math.floor(number * divider) / divider;
 }
 
 export function padWithZero(number: number): string {

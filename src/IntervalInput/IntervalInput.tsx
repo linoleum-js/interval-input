@@ -88,33 +88,36 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
     return !this.asLeastMinWidth(item) && !util.isEmpty(item);
   }
 
-  private collapsePrevItem(item: IntervalInputDataItem, index: number):number {
-    const { intervals } = this.props.data;
-    return this.collapse(item, intervals[index - 1], intervals[index - 2], 'start', 'end');
-  }
-
-  private collapseNextItem(item: IntervalInputDataItem, index: number):number {
-    const { intervals } = this.props.data;
-    return this.collapse(item, intervals[index + 1], intervals[index + 2], 'end', 'start');
-  }
-
-  private collapse(item: any, next: any, nextNext: any, key1: string, key2: string):number {
-    const { data, max } = this.props;
-    const { intervals } = data;
-
-    if (next) {
-      const removingNeeded = this.mustBeRemoved(next);
-      if (removingNeeded) {
-        if (nextNext) {
-          item[key1] = nextNext[key2];
-        } else {
-          item[key1] = max;
-        }
-        return 1;
-      }
+  private numberOfItemsRemoved(item: any):number {
+    if (item && this.mustBeRemoved(item)) {
+      return 1;
     }
     return 0;
   }
+
+  private collapsePrevItem(item: IntervalInputDataItem, index: number) {
+    const { intervals } = this.props.data;
+    this.collapse(item, intervals[index - 1], intervals[index - 2], 'left');
+  }
+
+  private collapseNextItem(item: IntervalInputDataItem, index: number) {
+    const { intervals } = this.props.data;
+    this.collapse(item, intervals[index + 1], intervals[index + 2], 'right');
+  }
+
+  private collapse(item: any, next: any, nextNext: any, dir: string) {
+    if (next) {
+      const removingNeeded = this.mustBeRemoved(next);
+      if (removingNeeded) {
+        if (dir === 'right') {
+          item.end = nextNext ? nextNext.start : this.props.max;
+        } else {
+          item.start = nextNext ? nextNext.start : 0;
+        }
+      }
+    }
+  }
+
 
   private onItemChanging = (item: IntervalInputDataItem, index: number) => {
     // some geometry and collision detection
@@ -123,8 +126,8 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
     const { intervals } = data;
     const prevItem = intervals[index - 1];
     const nextItem = intervals[index + 1];
-    let prevRemoved = 0;
-    let nextRemoved = 0;
+    let prevRemoved = this.numberOfItemsRemoved(prevItem);
+    let nextRemoved = this.numberOfItemsRemoved(nextItem);
 
     // check bounds
     this.keepItemInBounds(item);
@@ -136,8 +139,8 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
     }
     // When we move or resize item, we have to move and resize
     // next and prev items
-    prevRemoved = this.collapsePrevItem(item, index);
-    nextRemoved = this.collapseNextItem(item, index);
+    this.collapsePrevItem(item, index);
+    this.collapseNextItem(item, index);
 
     if (prevItem) {
       prevItem.end = item.start;
