@@ -163,6 +163,14 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
     return width / 3 > minWidth;
   }
 
+  private onRemove = (id: string) => {
+    const { data, onChange } = this.props;
+    const { intervals } = data;
+    onChange({
+      intervals: intervals.filter(item => item.id !== id)
+    });
+  }
+
   render() {
     const { data, step, unitSize, stepInPixels } = this.props;
     const { currentOpenMenu } = this.state;
@@ -185,6 +193,7 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
             unitSize={ unitSize }
             stepInPixels={ stepInPixels }
             canCreate={ this.canCreateInside(item) }
+            onRemove={ this.onRemove }
             onItemChanging={
               (item: IntervalInputDataItem) => {
                 this.onItemChanging(item, index);

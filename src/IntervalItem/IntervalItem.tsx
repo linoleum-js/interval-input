@@ -25,6 +25,7 @@ interface Props {
   onMenuOpen: Function;
   onMenuClose: Function;
   showMemu: boolean;
+  onRemove: Function;
 }
 
 interface State {
@@ -36,6 +37,7 @@ export default class IntervalItem extends React.Component<Props, State> {
   private root: HTMLElement;
   private lastXPosition: number;
   private isInFocus: boolean;
+  private menuPosition: object;
 
   constructor(props: Props) {
     super(props);
@@ -52,6 +54,7 @@ export default class IntervalItem extends React.Component<Props, State> {
   private onContextMenu = (event: any) => {
     event.preventDefault();
     const { onMenuOpen, id } = this.props;
+    this.menuPosition = { left: event.clientX, top: event.clientY };
     onMenuOpen(id);
   }
 
@@ -62,10 +65,10 @@ export default class IntervalItem extends React.Component<Props, State> {
 
   private focus = (event: any) => {
     // only left button, to prevent dragging on context menu opening
+    event.nativeEvent.stopImmediatePropagation();
     if (event.button !== 0) {
       return;
     }
-    event.nativeEvent.stopImmediatePropagation();
     this.props.onMenuClose();
     this.isInFocus = true;
     this.lastXPosition = event.clientX;
@@ -154,7 +157,7 @@ export default class IntervalItem extends React.Component<Props, State> {
 
   render() {
     const { start, end, type, isActive, stepInPixels, canCreate,
-            showMemu } = this.props;
+            showMemu, onRemove, id } = this.props;
     const isEmpty = util.isEmpty(type);
 
     return (
@@ -185,8 +188,9 @@ export default class IntervalItem extends React.Component<Props, State> {
           canCreate={ canCreate }
           isEmpty={ isEmpty }
           onCreate={() => {}}
-          onRemove={() => {}}
+          onRemove={() => onRemove(id)}
           onChange={() => {}}
+          position={ this.menuPosition }
         />}
       </div>
     );

@@ -12,6 +12,7 @@ interface Props {
   onCreate: any;
   onRemove: any;
   onChange: any;
+  position: any;
 }
 
 interface State {
@@ -39,6 +40,10 @@ export default class IntervalContextMenu extends React.Component<Props, State> {
     event.nativeEvent.stopImmediatePropagation();
   }
 
+  private getStyle() {
+    return this.props.position
+  }
+
   render() {
     const { isTypeChanging } = this.state;
 
@@ -47,6 +52,7 @@ export default class IntervalContextMenu extends React.Component<Props, State> {
         onClick={this.supressEvent}
         onMouseDown={this.supressEvent}
         className={ styles.contextMenu }
+        style={ this.getStyle() }
       >
         {!isTypeChanging && <div>
           <span onClick={this.props.onRemove}>Remove</span>
