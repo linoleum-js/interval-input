@@ -11,6 +11,10 @@ export default {
     color: '#ff694f',
     viewName: 'Type 3'
   },
+  'type-4': {
+    color: '#c145ff',
+    viewName: 'Type 4'
+  },
   'empty': {
     color: 'transparent',
     noDropdown: true,

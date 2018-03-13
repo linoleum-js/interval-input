@@ -10,7 +10,7 @@ interface Props {
   canCreate: boolean;
   onCreate: any;
   onRemove: any;
-  onChange: any;
+  onTypeChange: any;
   position: any;
   type: string;
 }
@@ -32,11 +32,12 @@ export default class IntervalContextMenu extends React.Component<Props, State> {
   }
 
   private onTypeChange = (typeName: string, event: any) => {
-    const { type } = this.props;
+    const { type, onTypeChange } = this.props;
     if (type === typeName) {
       event.preventDefault();
       return;
     }
+    onTypeChange(typeName);
   }
 
   private getStyle() {

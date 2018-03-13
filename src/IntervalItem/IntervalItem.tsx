@@ -85,33 +85,33 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   private onLeftMove = (diff: number) => {
-    const { onItemChanging, start, end, type, id, unitSize, step } = this.props;
+    const { onItemChanging, start, end, type, id, unitSize, step, index } = this.props;
     const diffInUnits = util.pixelsToUnits(diff, unitSize);
     const newItem = { start: util.roundTo(start + diffInUnits, step), end, type, id };
-    onItemChanging(newItem);
+    onItemChanging(newItem, index);
   }
 
   private onRightMove = (diff: number) => {
-    const { onItemChanging, start, end, type, id, unitSize, step } = this.props;
+    const { onItemChanging, start, end, type, id, unitSize, step, index } = this.props;
     const diffInUnits = util.pixelsToUnits(diff, unitSize);
     const newItem = { start, end: util.roundTo(end + diffInUnits, step), type, id };
-    onItemChanging(newItem);
+    onItemChanging(newItem, index);
   }
 
   private onMoveFinish = () => {
-    const { onItemChangingFinish, start, end, type, id } = this.props;
-    onItemChangingFinish({ start, end, type, id });
+    const { onItemChangingFinish, start, end, type, id, index } = this.props;
+    onItemChangingFinish({ start, end, type, id }, index);
   }
 
   private onDragCommit = (diff: number) => {
-    const { onItemChanging, start, end, type, id, unitSize, step } = this.props;
+    const { onItemChanging, start, end, type, id, unitSize, step, index } = this.props;
     const diffInUnits = util.pixelsToUnits(diff, unitSize);
     const newItem = {
       start: util.roundTo(start + diffInUnits, step),
       end: util.roundTo(end + diffInUnits, step),
       type, id
     };
-    onItemChanging(newItem);
+    onItemChanging(newItem, index);
   }
 
   private onDrag = (event: any) => {
@@ -157,6 +157,11 @@ export default class IntervalItem extends React.Component<Props, State> {
     });
   }
 
+  private onTypeChange = (newType: string) => {
+    const { start, end, type, id, index, onItemChangingFinish } = this.props;
+    onItemChangingFinish({ start, end, id, type: newType }, index);
+  }
+
   render() {
     const { start, end, type, isActive, stepInPixels, canCreate,
             showMemu, onRemove, onCreate, id, index } = this.props;
@@ -191,7 +196,7 @@ export default class IntervalItem extends React.Component<Props, State> {
           type={ type }
           onCreate={() => onCreate(index)}
           onRemove={() => onRemove(id)}
-          onChange={() => {}}
+          onTypeChange={ this.onTypeChange }
           position={ this.menuPosition }
         />}
       </div>
