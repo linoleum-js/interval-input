@@ -13,6 +13,7 @@ interface State {
   unitSize: number;
   currentActiveId?: string;
   stepInPixels: number;
+  currentOpenMenu?: string;
 }
 
 /**
@@ -30,6 +31,22 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
 
   componentDidMount() {
     this.initialize();
+    document.addEventListener('click', this.onDocumentClick);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this.onDocumentClick);
+  }
+
+  onDocumentClick = () => {
+    this.setState({
+      currentOpenMenu: null,
+      currentActiveId: null
+    });
+  }
+
+  onMenuOpen = (id: string) => {
+    this.setState({ currentOpenMenu: id });
   }
 
   private initialize = () => {
@@ -52,7 +69,7 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
     return this.state.currentActiveId === item.id;
   }
 
-  private checkItemMinWidth(item: IntervalInputDataItem): boolean {
+  private asLeastMinWidth(item: IntervalInputDataItem): boolean {
     const { minWidth } = this.props;
     return item.end - item.start >= minWidth;
   }
@@ -67,21 +84,26 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
     }
   }
 
+  private mustBeRemoved(item: IntervalInputDataItem):boolean {
+    return !this.asLeastMinWidth(item) && !util.isEmpty(item);
+  }
+
   private collapsePrevItem(item: IntervalInputDataItem, index: number):number {
     const { data } = this.props;
     const { intervals } = data;
     const prevItem = intervals[index - 1];
-    
+
+    // if there's is anything to collapse
     if (prevItem) {
-      const keepPrev = this.checkItemMinWidth(prevItem);
-      if (!keepPrev) {
+      const mustBeRemoved = this.mustBeRemoved(prevItem);
+      if (mustBeRemoved) {
         const prevPrevItem = intervals[index - 2];
         if (prevPrevItem) {
           item.start = prevPrevItem.end;
-          return 1;
         } else {
           item.start = 0;
         }
+        return 1;
       }
     }
     return 0;
@@ -93,15 +115,15 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
     const nextItem = intervals[index + 1];
 
     if (nextItem) {
-      const keepNext = this.checkItemMinWidth(nextItem);
-      if (!keepNext) {
+      const removingNeeded = this.mustBeRemoved(nextItem);
+      if (removingNeeded) {
         const nextNextItem = intervals[index + 2];
         if (nextNextItem) {
           item.end = nextNextItem.start;
-          return 1;
         } else {
           item.end = max;
         }
+        return 1;
       }
     }
     return 0;
@@ -121,13 +143,15 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
     // check bounds
     this.keepItemInBounds(item);
 
-    // When we move or resize item, we have to move and resize
-    // next and prev items
-    if (!this.checkItemMinWidth(item)) {
+    // while resizing, we should keep item at least at the min size
+    // No removing of the resizing item is allowed
+    if (!this.asLeastMinWidth(item)  ) {
       return;
     }
-    this.collapsePrevItem(item, index);
-    this.collapseNextItem(item, index);
+    // When we move or resize item, we have to move and resize
+    // next and prev items
+    prevRemoved = this.collapsePrevItem(item, index);
+    nextRemoved = this.collapseNextItem(item, index);
 
     if (prevItem) {
       prevItem.end = item.start;
@@ -148,8 +172,8 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
 
   private onItemChangingFinish = (item: IntervalInputDataItem, index: number) => {
     const { step } = this.props;
-    item.start = util.roundTo(item.start, step);
-    item.end = util.roundTo(item.end, step);
+    // item.start = util.roundTo(item.start, step);
+    // item.end = util.roundTo(item.end, step);
     this.onItemChanging(item, index);
   }
 
@@ -162,7 +186,7 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
 
   render() {
     const { data, step } = this.props;
-    const { unitSize, stepInPixels } = this.state;
+    const { unitSize, stepInPixels, currentOpenMenu } = this.state;
     const length = data.intervals.length;
 
     return (
@@ -173,6 +197,8 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
         {data.intervals.map((item: IntervalInputDataItem, index: number): any => {
           return <IntervalItem
             {...item}
+            showMemu={ currentOpenMenu === item.id }
+            onMenuOpen={ this.onMenuOpen }
             step={ step }
             key={ item.id }
             onActive={ this.onItemActive }
@@ -180,7 +206,7 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
             unitSize={ unitSize }
             stepInPixels={ stepInPixels }
             preventResize={{ left: index === 0, right: index === length - 1 }}
-            draggable={ index !== 0 && index !== length - 1 }
+            draggable={ index !== 0 && index !== length - 1 || true }
             canCreate={ this.canCreateInside(item) }
             onItemChanging={
               (item: IntervalInputDataItem) => {

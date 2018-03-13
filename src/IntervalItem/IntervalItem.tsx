@@ -13,7 +13,7 @@ interface Props {
   start: number;
   end: number;
   type: string;
-  step?: number;
+  step: number;
   stepInPixels: number;
   isActive?: boolean;
   onActive: Function;
@@ -24,12 +24,15 @@ interface Props {
   draggable: boolean;
   canCreate: boolean;
   preventResize: any;
-}
-
-interface State {
+  onMenuOpen: Function;
   showMemu: boolean;
 }
 
+interface State {
+}
+
+
+// TODO split
 export default class IntervalItem extends React.Component<Props, State> {
   private root: HTMLElement;
   private lastXPosition: number;
@@ -38,24 +41,24 @@ export default class IntervalItem extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     const noop = () => {};
-    if (props.type === 'empty') {
+    if (util.isEmpty(props.type)) {
       this.onClick = noop;
       this.onMoveFinish = noop;
       this.onDrag = noop;
-      this.onMove = noop;
+      this.onDragCommit = noop;
       this.focus = noop;
     }
-    this.state = {
-      showMemu: false
-    };
   }
 
   private onContextMenu = (event: any) => {
     event.preventDefault();
-    this.setState({ showMemu: true });
+    const { onMenuOpen, id } = this.props;
+    onMenuOpen(id);
   }
 
-  private onClick = () => {
+  private onClick = (event: any) => {
+    event.stopPropagation()
+    event.nativeEvent.stopImmediatePropagation();
   }
 
   private focus = (event: any) => {
@@ -76,16 +79,16 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   private onLeftMove = (diff: number) => {
-    const { onItemChanging, start, end, type, id, unitSize } = this.props;
+    const { onItemChanging, start, end, type, id, unitSize, step } = this.props;
     const diffInUnits = util.pixelsToUnits(diff, unitSize);
-    const newItem = { start: start + diffInUnits, end, type, id };
+    const newItem = { start: util.roundTo(start + diffInUnits, step), end, type, id };
     onItemChanging(newItem);
   }
 
   private onRightMove = (diff: number) => {
-    const { onItemChanging, start, end, type, id, unitSize } = this.props;
+    const { onItemChanging, start, end, type, id, unitSize, step } = this.props;
     const diffInUnits = util.pixelsToUnits(diff, unitSize);
-    const newItem = { start, end: end + diffInUnits, type, id };
+    const newItem = { start, end: util.roundTo(end + diffInUnits, step), type, id };
     onItemChanging(newItem);
   }
 
@@ -94,15 +97,15 @@ export default class IntervalItem extends React.Component<Props, State> {
     onItemChangingFinish({ start, end, type, id });
   }
 
-  private onMove = (diff: number) => {
+  private onDragCommit = (diff: number) => {
     if (!this.props.draggable) {
       return;
     }
-    const { onItemChanging, start, end, type, id, unitSize } = this.props;
+    const { onItemChanging, start, end, type, id, unitSize, step } = this.props;
     const diffInUnits = util.pixelsToUnits(diff, unitSize);
     const newItem = {
-      start: start + diffInUnits,
-      end: end + diffInUnits,
+      start: util.roundTo(start + diffInUnits, step),
+      end: util.roundTo(end + diffInUnits, step),
       type, id
     };
     onItemChanging(newItem);
@@ -112,32 +115,24 @@ export default class IntervalItem extends React.Component<Props, State> {
     if (!this.isInFocus) {
       return;
     }
-    const { onItemChanging, stepInPixels } = this.props;
+    const { onItemChanging, stepInPixels, step } = this.props;
     const xPosition = event.clientX;
     const diff = xPosition - this.lastXPosition;
 
     if (Math.abs(diff) >= stepInPixels) {
       this.lastXPosition = xPosition;
-      this.onMove(diff);
+      this.onDragCommit(diff);
     }
   }
 
   componentDidMount() {
     document.addEventListener('mouseup', this.blur, false);
     document.addEventListener('mousemove', this.onDrag, false);
-    document.addEventListener('click', this.onDocumentClick, false);
   }
 
   componentWillUnmount() {
     document.removeEventListener('mouseup', this.blur);
     document.removeEventListener('mousemove', this.onDrag);
-    document.removeEventListener('click', this.onDocumentClick);
-  }
-
-  private onDocumentClick = () => {
-    if (this.state.showMemu) {
-      this.setState({ showMemu: false });
-    }
   }
 
   private getStyle() {
@@ -161,9 +156,8 @@ export default class IntervalItem extends React.Component<Props, State> {
 
   render() {
     const { start, end, type, isActive, stepInPixels, canCreate,
-            preventResize } = this.props;
-    const { showMemu } = this.state;
-    const isEmpty = (type === 'empty');
+            preventResize, showMemu } = this.props;
+    const isEmpty = util.isEmpty(type);
 
     return (
       <div

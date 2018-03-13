@@ -44,6 +44,7 @@ export function roundTo(number: number, divider: number): number {
   const n = Math.floor(number / divider);
   const r = number % divider;
   return n * divider + (r >= divider / 2 ? divider : 0);
+  // return Math.floor(number * divider) / divider;
 }
 
 export function padWithZero(number: number): string {
@@ -55,4 +56,12 @@ export function secToHHMM(seconds: number): string {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   return padWithZero(hours) + ':' + padWithZero(minutes);
+}
+
+export function isEmpty(data: any): boolean {
+  if (typeof data === 'string') {
+    return data === 'empty';
+  } else {
+    return data.type === 'empty';
+  }
 }

@@ -7,6 +7,7 @@ import IntervalInputData from '../interfaces/IntervalInputData';
 import IntervalInputDataItem from '../interfaces/IntervalInputDataItem';
 import IntervalInputProps from './IntervalInputProps';
 import IntervalInput from './IntervalInput';
+import * as util from '../util/util';
 
 interface State {}
 
@@ -33,7 +34,7 @@ export default class IntervalInputContainer extends React.Component<IntervalInpu
 
   private removeEmptyItems(data: IntervalInputData) {
     return {
-      intervals: data.intervals.filter(item => item.type !== 'empty')
+      intervals: data.intervals.filter(item => !util.isEmpty(item))
     };
   }
 
