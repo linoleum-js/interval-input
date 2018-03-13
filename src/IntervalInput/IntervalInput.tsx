@@ -5,14 +5,12 @@ import PropTypes = require('prop-types');
 import IntervalItem from '../IntervalItem/IntervalItem';
 import IntervalInputData from '../interfaces/IntervalInputData';
 import IntervalInputDataItem from '../interfaces/IntervalInputDataItem';
-import IntervalInputProps from './IntervalInputProps';
+import IntervalInputProps from '../interfaces/IntervalInputProps';
 import * as util from '../util/util';
 const styles = require('./IntervalInput.css');
 
 interface State {
-  unitSize: number;
   currentActiveId?: string;
-  stepInPixels: number;
   currentOpenMenu?: string;
 }
 
@@ -26,11 +24,10 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
   constructor(props: IntervalInputProps) {
     super(props);
     const { min, max, step } = props;
-    this.state = { unitSize: 0, stepInPixels: 0 };
+    this.state = {};
   }
 
   componentDidMount() {
-    this.initialize();
     document.addEventListener('click', this.onDocumentClick, false);
   }
 
@@ -47,18 +44,6 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
 
   onMenuOpen = (id: string) => {
     this.setState({ currentOpenMenu: id });
-  }
-
-  private initialize = () => {
-    let { unitSize, stepInPixels } = this.state;
-    if (unitSize && stepInPixels) {
-      return;
-    }
-    const width = this.root.offsetWidth;
-    const { min, max, step } = this.props;
-    unitSize = width / (max - min);
-    stepInPixels = util.unitsToPixels(step, unitSize);
-    this.setState({ unitSize, stepInPixels });
   }
 
   private onItemActive = (itemId: string) => {
@@ -105,6 +90,13 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
     this.collapse(item, intervals[index + 1], intervals[index + 2], 'right');
   }
 
+  /**
+   * Collapse (if it's needed) an adjacent items
+   * @param {IntervalInputDataItem} item Current item
+   * @param {IntervalInputDataItem} next Adjacent item
+   * @param {IntervalInputDataItem} nextNext Next adjacent item
+   * @param {string} dir direction of the movement
+   */
   private collapse(item: any, next: any, nextNext: any, dir: string) {
     if (next) {
       const removingNeeded = this.mustBeRemoved(next);
@@ -117,7 +109,6 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
       }
     }
   }
-
 
   private onItemChanging = (item: IntervalInputDataItem, index: number) => {
     // some geometry and collision detection
@@ -172,8 +163,8 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
   }
 
   render() {
-    const { data, step } = this.props;
-    const { unitSize, stepInPixels, currentOpenMenu } = this.state;
+    const { data, step, unitSize, stepInPixels } = this.props;
+    const { currentOpenMenu } = this.state;
     const length = data.intervals.length;
 
     return (
@@ -192,8 +183,6 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
             isActive={ this.isItemActive(item) }
             unitSize={ unitSize }
             stepInPixels={ stepInPixels }
-            preventResize={{ left: index === 0, right: index === length - 1 }}
-            draggable={ index !== 0 && index !== length - 1 || true }
             canCreate={ this.canCreateInside(item) }
             onItemChanging={
               (item: IntervalInputDataItem) => {

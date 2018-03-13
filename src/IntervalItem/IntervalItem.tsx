@@ -21,9 +21,7 @@ interface Props {
   unitSize: number;
   onItemChanging: Function;
   onItemChangingFinish: Function;
-  draggable: boolean;
   canCreate: boolean;
-  preventResize: any;
   onMenuOpen: Function;
   showMemu: boolean;
 }
@@ -99,9 +97,6 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   private onDragCommit = (diff: number) => {
-    if (!this.props.draggable) {
-      return;
-    }
     const { onItemChanging, start, end, type, id, unitSize, step } = this.props;
     const diffInUnits = util.pixelsToUnits(diff, unitSize);
     const newItem = {
@@ -157,7 +152,7 @@ export default class IntervalItem extends React.Component<Props, State> {
 
   render() {
     const { start, end, type, isActive, stepInPixels, canCreate,
-            preventResize, showMemu } = this.props;
+            showMemu } = this.props;
     const isEmpty = util.isEmpty(type);
 
     return (

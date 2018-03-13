@@ -5,13 +5,39 @@ const uuid = require('uuid');
 
 import IntervalInputData from '../interfaces/IntervalInputData';
 import IntervalInputDataItem from '../interfaces/IntervalInputDataItem';
-import IntervalInputProps from './IntervalInputProps';
+import IntervalInputContainerProps from '../interfaces/IntervalInputContainerProps';
 import IntervalInput from './IntervalInput';
 import * as util from '../util/util';
 
-interface State {}
+interface State {
+  unitSize?: number;
+  stepInPixels?: number;
+}
 
-export default class IntervalInputContainer extends React.Component<IntervalInputProps, State> {
+export default class IntervalInputContainer extends React.Component<IntervalInputContainerProps, State> {
+  private root: HTMLElement;
+
+  constructor(props: IntervalInputContainerProps) {
+    super(props);
+    this.state = { };
+  }
+
+  componentDidMount() {
+    this.initialize();
+  }
+
+  private initialize = () => {
+    let { unitSize, stepInPixels } = this.state;
+    if (unitSize && stepInPixels) {
+      return;
+    }
+    const width = this.root.offsetWidth;
+    const { min, max, step } = this.props;
+    unitSize = width / (max - min);
+    stepInPixels = util.unitsToPixels(step, unitSize);
+    this.setState({ unitSize, stepInPixels });
+  }
+
   private fillWithEmptyItems(data: IntervalInputData, max: number): IntervalInputData {
     const result: Array<IntervalInputDataItem> = [];
     const list = data.intervals;
@@ -40,13 +66,16 @@ export default class IntervalInputContainer extends React.Component<IntervalInpu
 
   render() {
     const { data, max, onChange, ...rest } = this.props;
+    const { unitSize, stepInPixels } = this.state;
     const dataFilledWithEmpty = this.fillWithEmptyItems(data, max);
     return (
-      <div>
+      <div ref={(root) => { this.root = root; }}>
         <IntervalInput
           { ...rest }
           data={ dataFilledWithEmpty }
           max={ max }
+          unitSize={ unitSize }
+          stepInPixels={ stepInPixels }
           onChange={(data: IntervalInputData) => {
             onChange(this.removeEmptyItems(data))
           }}
