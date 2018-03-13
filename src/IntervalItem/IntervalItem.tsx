@@ -23,6 +23,7 @@ interface Props {
   onItemChangingFinish: Function;
   canCreate: boolean;
   onMenuOpen: Function;
+  onMenuClose: Function;
   showMemu: boolean;
 }
 
@@ -65,6 +66,7 @@ export default class IntervalItem extends React.Component<Props, State> {
       return;
     }
     event.nativeEvent.stopImmediatePropagation();
+    this.props.onMenuClose();
     this.isInFocus = true;
     this.lastXPosition = event.clientX;
     const { isActive, onActive, id } = this.props;

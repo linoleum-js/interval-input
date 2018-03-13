@@ -35,6 +35,7 @@ export default class IntervalItemResizer extends React.Component<Props, State> {
     this.lastXPosition = event.clientX;
     // click on the interval item means dragging
     event.stopPropagation();
+    event.nativeEvent.stopImmediatePropagation();
     this.setState({ isInFocus: true });
   }
 

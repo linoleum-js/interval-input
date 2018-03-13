@@ -28,11 +28,11 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
   }
 
   componentDidMount() {
-    document.addEventListener('click', this.onDocumentClick, false);
+    document.addEventListener('mousedown', this.onDocumentClick, false);
   }
 
   componentWillUnmount() {
-    document.removeEventListener('click', this.onDocumentClick);
+    document.removeEventListener('mousedown', this.onDocumentClick);
   }
 
   private onDocumentClick = () => {
@@ -44,6 +44,10 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
 
   private onMenuOpen = (id: string) => {
     this.setState({ currentOpenMenu: id });
+  }
+
+  private onMenuClose = () => {
+    this.setState({ currentOpenMenu: null });
   }
 
   private onItemActive = (itemId: string) => {
@@ -66,9 +70,6 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
 
   private isGoingOutOfBounds(item: IntervalInputDataItem):boolean {
     const { max } = this.props;
-    if (item.id === '2') {
-      console.log(item.end, max);
-    }
     return item.end > max || item.start < 0;
   }
 
@@ -80,10 +81,7 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
   }
 
   private numberOfItemsRemoved(item: any):number {
-    if (item && this.mustBeRemoved(item)) {
-      return 1;
-    }
-    return 0;
+    return item && this.mustBeRemoved(item) ? 1 : 0;
   }
 
   private collapsePrevItem(item: IntervalInputDataItem, index: number) {
@@ -179,6 +177,7 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
             {...item}
             showMemu={ currentOpenMenu === item.id }
             onMenuOpen={ this.onMenuOpen }
+            onMenuClose={ this.onMenuClose }
             step={ step }
             key={ item.id }
             onActive={ this.onItemActive }
