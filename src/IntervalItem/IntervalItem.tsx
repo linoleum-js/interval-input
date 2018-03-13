@@ -26,6 +26,8 @@ interface Props {
   onMenuClose: Function;
   showMemu: boolean;
   onRemove: Function;
+  onCreate: Function;
+  index: number;
 }
 
 interface State {
@@ -157,7 +159,7 @@ export default class IntervalItem extends React.Component<Props, State> {
 
   render() {
     const { start, end, type, isActive, stepInPixels, canCreate,
-            showMemu, onRemove, id } = this.props;
+            showMemu, onRemove, onCreate, id, index } = this.props;
     const isEmpty = util.isEmpty(type);
 
     return (
@@ -187,7 +189,7 @@ export default class IntervalItem extends React.Component<Props, State> {
         {showMemu && <IntervalContextMenu
           canCreate={ canCreate }
           type={ type }
-          onCreate={() => {}}
+          onCreate={() => onCreate(index)}
           onRemove={() => onRemove(id)}
           onChange={() => {}}
           position={ this.menuPosition }

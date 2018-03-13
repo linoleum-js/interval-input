@@ -7,6 +7,7 @@ import IntervalInputData from '../interfaces/IntervalInputData';
 import IntervalInputDataItem from '../interfaces/IntervalInputDataItem';
 import IntervalInputProps from '../interfaces/IntervalInputProps';
 import * as util from '../util/util';
+import types from '../util/types';
 const styles = require('./IntervalInput.css');
 
 interface State {
@@ -171,6 +172,38 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
     });
   }
 
+  private onCreate = (index: number) => {
+    const { data, onChange, step } = this.props;
+    const { intervals } = data;
+    const item = intervals[index];
+    const itemSize = item.end - item.start;
+    const thirdOfSize = itemSize / 3;
+    const leftItem = util.createItem(
+      item.type,
+      item.start,
+      util.roundTo(item.start + thirdOfSize, step)
+    );
+    const middleItem = util.createItem(
+      util.getTypeForNew(item.type),
+      leftItem.end,
+      util.roundTo(item.start + thirdOfSize * 2, step)
+    );
+    const rightItem = util.createItem(
+      item.type,
+      middleItem.end,
+      item.end
+    );
+    onChange({
+      intervals: [
+        ...intervals.slice(0, index),
+        leftItem,
+        middleItem,
+        rightItem,
+        ...intervals.slice(index + 1)
+      ]
+    });
+  };
+
   render() {
     const { data, step, unitSize, stepInPixels } = this.props;
     const { currentOpenMenu } = this.state;
@@ -188,12 +221,14 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
             onMenuClose={ this.onMenuClose }
             step={ step }
             key={ item.id }
+            index={ index }
             onActive={ this.onItemActive }
             isActive={ this.isItemActive(item) }
             unitSize={ unitSize }
             stepInPixels={ stepInPixels }
             canCreate={ this.canCreateInside(item) }
             onRemove={ this.onRemove }
+            onCreate={ this.onCreate }
             onItemChanging={
               (item: IntervalInputDataItem) => {
                 this.onItemChanging(item, index);

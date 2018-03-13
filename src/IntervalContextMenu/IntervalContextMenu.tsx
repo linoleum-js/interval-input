@@ -52,7 +52,7 @@ export default class IntervalContextMenu extends React.Component<Props, State> {
 
   render() {
     const { isTypeChanging } = this.state;
-    const { type } = this.props;
+    const { type, canCreate } = this.props;
 
     return (
       <div
@@ -64,7 +64,7 @@ export default class IntervalContextMenu extends React.Component<Props, State> {
       >
         {!isTypeChanging && <div>
           {!util.isEmpty(type) && <span onClick={this.props.onRemove}>Remove</span>}
-          <span onClick={this.props.onCreate}>Create</span>
+          {canCreate && <span onClick={this.props.onCreate}>Create</span>}
           <span onClick={this.typeChanging}>Change type</span>
         </div>}
 

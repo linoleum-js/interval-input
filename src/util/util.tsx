@@ -1,6 +1,7 @@
 const uuid = require('uuid');
 
 import IntervalInputDataItem from '../interfaces/IntervalInputDataItem';
+import types from './types';
 
 export function unitsToPixels(units: number, unitSize: number): number {
   return units * unitSize;
@@ -67,13 +68,17 @@ export function isEmpty(data: any): boolean {
   }
 }
 
-export function createEmpty(start: number, end: number):IntervalInputDataItem {
+export function createItem(type: string, start: number, end: number):IntervalInputDataItem {
   return {
-    type: 'empty',
+    type,
     start,
     end,
     id: uuid()
-  };
+  }
+}
+
+export function createEmpty(start: number, end: number):IntervalInputDataItem {
+  return createItem('empty', start, end);
 }
 
 export function supressEvent(event: any) {
@@ -81,4 +86,9 @@ export function supressEvent(event: any) {
   event.nativeEvent.stopImmediatePropagation();
   event.preventDefault();
   event.nativeEvent.preventDefault();
+}
+
+export function getTypeForNew(type: string): string {
+  const typeNames = Object.keys(types);
+  return type === typeNames[0] ? typeNames[1] : typeNames[0];
 }
