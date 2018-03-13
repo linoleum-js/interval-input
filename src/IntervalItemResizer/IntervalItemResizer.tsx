@@ -101,6 +101,7 @@ export default class IntervalItemResizer extends React.Component<Props, State> {
         ref={(root) => { this.root = root }}
         className={ this.getWrapClasses() }
         onMouseDown={ this.focus }
+        onContextMenu={ util.supressEvent }
       >
         <div
           className={ this.getMarkClasses() }

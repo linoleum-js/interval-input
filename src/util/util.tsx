@@ -1,3 +1,5 @@
+const uuid = require('uuid');
+
 import IntervalInputDataItem from '../interfaces/IntervalInputDataItem';
 
 export function unitsToPixels(units: number, unitSize: number): number {
@@ -63,4 +65,20 @@ export function isEmpty(data: any): boolean {
   } else {
     return data.type === 'empty';
   }
+}
+
+export function createEmpty(start: number, end: number):IntervalInputDataItem {
+  return {
+    type: 'empty',
+    start,
+    end,
+    id: uuid()
+  };
+}
+
+export function supressEvent(event: any) {
+  event.stopPropagation();
+  event.nativeEvent.stopImmediatePropagation();
+  event.preventDefault();
+  event.nativeEvent.preventDefault();
 }

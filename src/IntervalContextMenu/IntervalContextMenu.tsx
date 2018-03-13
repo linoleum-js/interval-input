@@ -8,11 +8,11 @@ import types from '../util/types';
 
 interface Props {
   canCreate: boolean;
-  isEmpty: boolean;
   onCreate: any;
   onRemove: any;
   onChange: any;
   position: any;
+  type: string;
 }
 
 interface State {
@@ -31,31 +31,39 @@ export default class IntervalContextMenu extends React.Component<Props, State> {
     this.setState({ isTypeChanging: true });
   }
 
-  private onTypeChange = (typeName: string) => {
-
-  }
-
-  private supressEvent = (event: any) => {
-    event.stopPropagation();
-    event.nativeEvent.stopImmediatePropagation();
+  private onTypeChange = (typeName: string, event: any) => {
+    const { type } = this.props;
+    if (type === typeName) {
+      event.preventDefault();
+      return;
+    }
   }
 
   private getStyle() {
     return this.props.position
   }
 
+  private getItemClass(typeName: string) {
+    const { type } = this.props;
+    return classNames({
+      [styles.contextMenuItemActive]: typeName === type
+    });
+  }
+
   render() {
     const { isTypeChanging } = this.state;
+    const { type } = this.props;
 
     return (
       <div
-        onClick={this.supressEvent}
-        onMouseDown={this.supressEvent}
+        onClick={ util.supressEvent }
+        onMouseDown={ util.supressEvent }
+        onContextMenu={ util.supressEvent }
         className={ styles.contextMenu }
         style={ this.getStyle() }
       >
         {!isTypeChanging && <div>
-          <span onClick={this.props.onRemove}>Remove</span>
+          {!util.isEmpty(type) && <span onClick={this.props.onRemove}>Remove</span>}
           <span onClick={this.props.onCreate}>Create</span>
           <span onClick={this.typeChanging}>Change type</span>
         </div>}
@@ -63,10 +71,10 @@ export default class IntervalContextMenu extends React.Component<Props, State> {
         {isTypeChanging && <div>
           {Object.keys(types).map((typeName: string) => {
             const type = types[typeName];
-            if (typeName === 'empty') { return ''; }
             return <span
               key={typeName}
-              onClick={() => { this.onTypeChange(typeName) }}
+              onClick={(event) => { this.onTypeChange(typeName, event) }}
+              className={ this.getItemClass(typeName) }
             >{type.viewName}</span>;
           })}
         </div>}

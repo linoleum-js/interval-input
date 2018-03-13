@@ -54,7 +54,7 @@ export default class IntervalItem extends React.Component<Props, State> {
   private onContextMenu = (event: any) => {
     event.preventDefault();
     const { onMenuOpen, id } = this.props;
-    this.menuPosition = { left: event.clientX, top: event.clientY };
+    this.menuPosition = { left: event.clientX + 5, top: event.clientY + 5 };
     onMenuOpen(id);
   }
 
@@ -186,7 +186,7 @@ export default class IntervalItem extends React.Component<Props, State> {
         />}
         {showMemu && <IntervalContextMenu
           canCreate={ canCreate }
-          isEmpty={ isEmpty }
+          type={ type }
           onCreate={() => {}}
           onRemove={() => onRemove(id)}
           onChange={() => {}}

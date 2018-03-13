@@ -13,6 +13,7 @@ export default {
   },
   'empty': {
     color: 'transparent',
-    noDropdown: true
+    noDropdown: true,
+    viewName: 'Not specified'
   }
 } as any;
