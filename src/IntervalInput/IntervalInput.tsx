@@ -109,7 +109,7 @@ export default class IntervalInput extends React.Component<IntervalInputProps, S
         if (dir === 'right') {
           item.end = nextNext ? nextNext.start : this.props.max;
         } else {
-          item.start = nextNext ? nextNext.start : 0;
+          item.start = nextNext ? nextNext.end : 0;
         }
       }
     }
