@@ -69,6 +69,24 @@ export default class IntervalInputContainer extends React.Component<IntervalInpu
     };
   }
 
+  private collapseSameType = (data: IntervalInputData) => {
+    const intervals = data.intervals;
+    const newIntervals: Array<IntervalInputDataItem> = [];
+    let prevItem: any = {};
+    intervals.forEach((item: IntervalInputDataItem) => {
+      if (item.type !== prevItem.type) {
+        prevItem = item;
+        newIntervals.push(item);
+        return;
+      } else if (item.start === prevItem.end) {
+        prevItem.end = item.end;
+      }
+    });
+    return {
+      intervals: newIntervals
+    };
+  }
+
   render() {
     const { data, max, onChange, ...rest } = this.props;
     const { unitSize, stepInPixels } = this.state;
@@ -82,7 +100,7 @@ export default class IntervalInputContainer extends React.Component<IntervalInpu
           unitSize={ unitSize }
           stepInPixels={ stepInPixels }
           onChange={(data: IntervalInputData) => {
-            onChange(this.removeEmptyItems(data))
+            onChange(this.collapseSameType(this.removeEmptyItems(data)))
           }}
         />
         <pre>{ JSON.stringify(dataFilledWithEmpty, null, 2 ) }</pre>
