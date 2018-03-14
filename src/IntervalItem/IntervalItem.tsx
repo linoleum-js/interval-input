@@ -4,6 +4,7 @@ import classNames = require('classnames');
 
 const styles = require('./IntervalItem.css');
 import * as util from '../util/util';
+const documentStyles = require('../util/global.css');
 import types from '../util/types';
 import IntervalItemResizer from '../IntervalItemResizer/IntervalItemResizer';
 import IntervalInputDataItem from '../interfaces/IntervalInputDataItem';
@@ -52,7 +53,7 @@ export default class IntervalItem extends React.Component<Props, State> {
   private onContextMenu = (event: any) => {
     event.preventDefault();
     const { onMenuOpen, id } = this.props;
-    this.menuPosition = { left: event.clientX + 5, top: event.clientY + 5 };
+    this.menuPosition = util.keepOnScreen({ left: event.clientX + 5, top: event.clientY + 5 }, 150);
     onMenuOpen(id);
   }
 
@@ -77,10 +78,12 @@ export default class IntervalItem extends React.Component<Props, State> {
     if (!isActive) {
       onActive(id);
     }
+    util.addDocumentClass(documentStyles.cursorGrabbing);
   }
 
   private blur = () => {
     this.isInFocus = false;
+    util.removeDocumentClass(documentStyles.cursorGrabbing);
   }
 
   private onLeftMove = (diff: number) => {
@@ -156,9 +159,11 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   private getClasses() {
-    const { isActive } = this.props;
+    const { isActive, type } = this.props;
+    const isEmpty = util.isEmpty(type);
     return classNames(styles.intervalItem, {
-      [styles.intervalItemActive]: isActive
+      [styles.intervalItemActive]: isActive,
+      [styles.intervalItemEmpty]: isEmpty
     });
   }
 

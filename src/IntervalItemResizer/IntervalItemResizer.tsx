@@ -4,6 +4,7 @@ import classNames = require('classnames');
 const throttle = require('throttle-debounce/throttle');
 
 import * as util from '../util/util';
+const documentStyles = require('../util/global.css');
 const styles = require('./IntervalItemResizer.css');
 
 interface Props {
@@ -37,6 +38,7 @@ export default class IntervalItemResizer extends React.Component<Props, State> {
     event.stopPropagation();
     event.nativeEvent.stopImmediatePropagation();
     this.setState({ isInFocus: true });
+    util.addDocumentClass(documentStyles.cursorGrabbing);
   }
 
   private blur = () => {
@@ -51,6 +53,7 @@ export default class IntervalItemResizer extends React.Component<Props, State> {
     if (this.state.isInFocus) {
       this.setState({ isInFocus: false });
     }
+    util.removeDocumentClass(documentStyles.cursorGrabbing);
   }
 
   private onMouseMove = (event: any) => {

@@ -92,3 +92,25 @@ export function getTypeForNew(type: string): string {
   const typeNames = Object.keys(types);
   return type === typeNames[0] ? typeNames[1] : typeNames[0];
 }
+
+export function keepOnScreen(position: any, size: number): any {
+  const doc = document.documentElement;
+  const overflowX = position.left + size - doc.clientWidth;
+  const overflowY = position.top + size - doc.clientHeight;
+  const result = {...position};
+  if (overflowX > 0) {
+    result.left -= overflowX + 5;
+  }
+  if (overflowY > 0) {
+    result.top -= overflowY + 5;
+  }
+  return result;
+}
+
+export function addDocumentClass(className: string) {
+  document.documentElement.classList.add(className);
+}
+
+export function removeDocumentClass(className: string) {
+  document.documentElement.classList.remove(className);
+}
