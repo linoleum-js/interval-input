@@ -98,7 +98,7 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   private onMoveFinish = () => {
-    if(this.isEmpty) {
+    if(this.isEmpty()) {
       return;
     }
     const { onItemChangingFinish, start, end, type, id, index } = this.props;
@@ -106,7 +106,7 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   private onDragCommit = (diff: number) => {
-    if(this.isEmpty) {
+    if(this.isEmpty()) {
       return;
     }
     const { onItemChanging, start, end, type, id, unitSize, step, index } = this.props;
