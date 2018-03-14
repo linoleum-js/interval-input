@@ -43,14 +43,10 @@ export default class IntervalItem extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    const noop = () => {};
-    if (util.isEmpty(props.type)) {
-      this.onClick = noop;
-      this.onMoveFinish = noop;
-      this.onDrag = noop;
-      this.onDragCommit = noop;
-      this.focus = noop;
-    }
+  }
+
+  private isEmpty(): boolean {
+    return util.isEmpty(this.props.type);
   }
 
   private onContextMenu = (event: any) => {
@@ -66,6 +62,9 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   private focus = (event: any) => {
+    if (this.isEmpty()) {
+      return;
+    }
     // only left button, to prevent dragging on context menu opening
     event.nativeEvent.stopImmediatePropagation();
     if (event.button !== 0) {
@@ -99,11 +98,17 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   private onMoveFinish = () => {
+    if(this.isEmpty) {
+      return;
+    }
     const { onItemChangingFinish, start, end, type, id, index } = this.props;
     onItemChangingFinish({ start, end, type, id }, index);
   }
 
   private onDragCommit = (diff: number) => {
+    if(this.isEmpty) {
+      return;
+    }
     const { onItemChanging, start, end, type, id, unitSize, step, index } = this.props;
     const diffInUnits = util.pixelsToUnits(diff, unitSize);
     const newItem = {
@@ -115,7 +120,7 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   private onDrag = (event: any) => {
-    if (!this.isInFocus) {
+    if (!this.isInFocus || this.isEmpty()) {
       return;
     }
     const { onItemChanging, stepInPixels, step } = this.props;

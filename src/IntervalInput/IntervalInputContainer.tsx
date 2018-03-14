@@ -74,12 +74,11 @@ export default class IntervalInputContainer extends React.Component<IntervalInpu
     const newIntervals: Array<IntervalInputDataItem> = [];
     let prevItem: any = {};
     intervals.forEach((item: IntervalInputDataItem) => {
-      if (item.type !== prevItem.type) {
+      if (item.type === prevItem.type && item.start === prevItem.end) {
+        prevItem.end = item.end;
+      } else {
         prevItem = item;
         newIntervals.push(item);
-        return;
-      } else if (item.start === prevItem.end) {
-        prevItem.end = item.end;
       }
     });
     return {
