@@ -3,40 +3,29 @@ import ReactDOM = require('react-dom');
 
 import IntervalInputContainer from './IntervalInput/IntervalInputContainer';
 import IntervalInputData from './interfaces/IntervalInputData';
+import IntervalsList from './IntervalsList/IntervalsList';
+import initialData from './util/initial-data';
 
 class App extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      data: {
-        intervals: [{
-          start: 0,
-          end: 60 * 5 * 10,
-          type: 'type-1',
-          id: '1'
-        }, {
-          start: 60 * 5 * 15,
-          end: 60 * 5 * 35,
-          type: 'type-2',
-          id: '2'
-        }]
-      }
+      data: initialData
     };
   }
 
   private onChange = (data: any) => {
-    this.setState({ data });
+    console.log(data);
+    this.setState({ data }, () => {
+      console.log(this.state);
+    });
   }
 
   render() {
-    return (<IntervalInputContainer
-      min={0}
-      max={86400}
-      data={this.state.data}
-      step={60 * 5} // 5 minute step
-      onChange={this.onChange}
-      minWidth={60 * 20}
-    />);
+    return <IntervalsList
+      data={ this.state.data }
+      onChange={ this.onChange }
+    />
   }
 }
 

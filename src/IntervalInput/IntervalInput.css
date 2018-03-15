@@ -1,8 +1,9 @@
 
 .intervalInput {
   height: 40px;
-  background-color: #ccc;
+  background-color: #d9d9d9;
   position: relative;
   user-select: none;
   font-family: sans-serif;
+  margin: 10px 0;
 }

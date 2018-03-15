@@ -102,7 +102,7 @@ export default class IntervalInputContainer extends React.Component<IntervalInpu
             onChange(this.collapseSameType(this.removeEmptyItems(data)))
           }}
         />
-        <pre>{ JSON.stringify(dataFilledWithEmpty, null, 2 ) }</pre>
+        {false && <pre>{ JSON.stringify(dataFilledWithEmpty, null, 2 ) }</pre>}
       </div>
     );
   }
