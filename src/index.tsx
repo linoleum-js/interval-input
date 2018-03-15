@@ -4,7 +4,7 @@ import ReactDOM = require('react-dom');
 import IntervalInputContainer from './IntervalInput/IntervalInputContainer';
 import IntervalInputData from './interfaces/IntervalInputData';
 import IntervalsList from './IntervalsList/IntervalsList';
-import initialData from './util/initial-data';
+import initialData from './util/initial-data.js';
 import * as util from './util/util';
 
 const max = 86400;

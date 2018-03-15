@@ -45,7 +45,7 @@ export default class IntervalItem extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    // this.onDrag = throttle(100, this.onDrag);
+    // this.onDrag = throttle(30, this.onDrag);
   }
 
   private isEmpty(): boolean {

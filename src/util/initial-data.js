@@ -55,4 +55,4 @@ export default [{
     }],
     id: '5c33177a-936a-469d-922f-239514c9935' + index
   };
-})] as any;
+})];
