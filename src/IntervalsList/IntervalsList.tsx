@@ -9,6 +9,7 @@ import IntervalInputData from '../interfaces/IntervalInputData';
 interface IntervalsListProps {
   data: Array<IntervalInputData>
   onChange: Function;
+  max: number;
 }
 
 interface State {
@@ -30,15 +31,15 @@ export default class IntervalsList extends React.Component<IntervalsListProps, S
   }
 
   render() {
-    const { data } = this.props;
-    
+    const { data, max } = this.props;
+
     return (
       <div>
         {data.map((item: IntervalInputData, index: number) => {
           return <IntervalInputContainer
             key={item.id}
             min={0}
-            max={86400}
+            max={ max }
             data={item}
             step={60 * 5} // 5 minute step
             onChange={this.onItemChange.bind(this, index)}

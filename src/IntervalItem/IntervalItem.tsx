@@ -1,6 +1,7 @@
 
 import React = require('react');
 import classNames = require('classnames');
+const throttle = require('throttle-debounce/throttle');
 
 const styles = require('./IntervalItem.css');
 import * as util from '../util/util';
@@ -44,6 +45,7 @@ export default class IntervalItem extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
+    // this.onDrag = throttle(100, this.onDrag);
   }
 
   private isEmpty(): boolean {
@@ -109,9 +111,6 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   private onDragCommit = (diff: number) => {
-    if(this.isEmpty()) {
-      return;
-    }
     const { onItemChanging, start, end, type, id, unitSize, step, index } = this.props;
     const diffInUnits = util.pixelsToUnits(diff, unitSize);
     const newItem = {
@@ -123,9 +122,10 @@ export default class IntervalItem extends React.Component<Props, State> {
   }
 
   private onDrag = (event: any) => {
-    if (!this.isInFocus || this.isEmpty()) {
+    if (!this.isInFocus) {
       return;
     }
+    // console.log(this.props.id);
     const { onItemChanging, stepInPixels, step } = this.props;
     const xPosition = event.clientX;
     const diff = xPosition - this.lastXPosition;

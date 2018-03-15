@@ -1,6 +1,8 @@
 const uuid = require('uuid');
 
 import IntervalInputDataItem from '../interfaces/IntervalInputDataItem';
+import IntervalInputData from '../interfaces/IntervalInputData';
+
 import types from './types';
 
 export function unitsToPixels(units: number, unitSize: number): number {
@@ -16,7 +18,8 @@ export function itemToPixels(
   unitSize: number): IntervalInputDataItem {
 
   return {
-    ...item,
+    id: item.id,
+    type: item.type,
     start: unitsToPixels(item.start, unitSize),
     end: unitsToPixels(item.end, unitSize)
   };
@@ -113,4 +116,30 @@ export function addDocumentClass(className: string) {
 
 export function removeDocumentClass(className: string) {
   document.documentElement.classList.remove(className);
+}
+
+export function fillWithEmptyItems(data: IntervalInputData, max: number): IntervalInputData {
+  const result: Array<IntervalInputDataItem> = [];
+  const list = data.intervals;
+  let prevEnd = 0;
+  if (!list.length) {
+    return {
+      intervals: [createEmpty(0, max)]
+    };
+  }
+  list.forEach((item: IntervalInputDataItem, index: number) => {
+    if (item.start > prevEnd) {
+      result.push(createEmpty(prevEnd, item.start));
+    }
+    prevEnd = item.end;
+    result.push(item);
+  });
+  const lastItem = list[list.length - 1];
+  if (lastItem.end < max) {
+    result.push(createEmpty(lastItem.end, max));
+  }
+  return {
+    intervals: result,
+    id: data.id
+  };
 }
