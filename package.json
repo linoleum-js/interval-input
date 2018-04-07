@@ -4,8 +4,7 @@
   "scripts": {
     "start": "webpack-dev-server --content-base build/",
     "build": "webpack",
-    "build-dev": "webpack --watch",
-    "test": "jest"
+    "build-dev": "webpack --watch"
   },
   "devDependencies": {
     "@types/classnames": "^2.2.3",
@@ -38,8 +37,9 @@
     "style-loader": "^0.13.1",
     "text-loader": "^0.0.1",
     "ts-loader": "^2.2.2",
+    "uglifyjs-webpack-plugin": "^1.2.3",
     "url-loader": "^0.5.7",
-    "webpack": "^3.6.0",
+    "webpack": "^2.2.0",
     "webpack-combine-loaders": "^2.0.3",
     "webpack-dev-server": "^2.8.2"
   },

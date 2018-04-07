@@ -40,7 +40,7 @@ export default [{
   }],
   id: '2728ef3b-d314-4aa1-be2c-327fd3227c3d'
 },
-...Array(200).fill(1).map((a, index) => {
+...Array(100).fill(1).map((a, index) => {
   return {
     intervals: [{
       start: 60 * 5 * 5,

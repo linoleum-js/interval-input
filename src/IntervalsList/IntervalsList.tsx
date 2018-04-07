@@ -23,12 +23,12 @@ export default class IntervalsList extends React.Component<IntervalsListProps, S
 
   private onItemChange = (index: number, intervalData: any) => {
     const { data, onChange } = this.props;
-    onChange(data);
-    // onChange([
-    //   ...data.slice(0, index),
-    //   {...data[index], ...intervalData},
-    //   ...data.slice(index + 1)
-    // ]);
+    // onChange(data);
+    onChange([
+      ...data.slice(0, index),
+      {...data[index], ...intervalData},
+      ...data.slice(index + 1)
+    ]);
   }
 
   render() {
