@@ -56,6 +56,7 @@ export default class IntervalItem extends React.Component<Props, State> {
     event.preventDefault();
     const { onMenuOpen, id } = this.props;
     this.menuPosition = util.keepOnScreen({ left: event.clientX + 5, top: event.clientY + 5 }, 150);
+    console.log('context menu');
     onMenuOpen(id);
   }
 

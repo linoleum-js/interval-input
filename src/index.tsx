@@ -9,13 +9,17 @@ import * as util from './util/util';
 
 const max = 86400;
 
+const fillWithEmptyItems = (data: any) => {
+  return data.map((item: IntervalInputData) => {
+    return util.fillWithEmptyItems(item, max);
+  })
+};
+
 class App extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      data: initialData.map((item: IntervalInputData) => {
-        return util.fillWithEmptyItems(item, max);
-      })
+      data: fillWithEmptyItems(initialData)
     };
   }
 
@@ -25,7 +29,7 @@ class App extends React.Component<any, any> {
 
   render() {
     return <IntervalsList
-      data={ this.state.data }
+      data={ fillWithEmptyItems(this.state.data) }
       onChange={ this.onChange }
       max={ max }
     />
